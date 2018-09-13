@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.AuditInfoDeleteDao" >
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.AuditInfoDelete" >
+    <id column="A_I_DD" property="aIDd" jdbcType="VARCHAR" />
+    <result column="MD_ID" property="mdId" jdbcType="VARCHAR" />
+    <association property="auditInfo" column="auditInfo" javaType="com.org.cygs.pojo.AuditInfo"></association>
+  </resultMap>
+  
+  <insert id="insertAuditInfoDelete" parameterType="com.org.cygs.pojo.AuditInfoDelete" >
+    insert into AUDIT_INFO_DELETE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="aIDd != null" >
+        A_I_DD,
+      </if>
+      <if test="auditInfo.aId != null" >
+        A_ID,
+      </if>
+      <if test="auditInfo.uId != null" >
+        U_ID,
+      </if>
+      <if test="auditInfo.roId != null" >
+        RO_ID,
+      </if>
+      <if test="mdId != null" >
+        MD_ID,
+      </if>
+      <if test="auditInfo.mId != null" >
+        M_ID,
+      </if>
+      <if test="auditInfo.auditResult != null" >
+        AUDIT_RESULT,
+      </if>
+      <if test="auditInfo.auditComment != null" >
+        AUDIT_COMMENT,
+      </if>
+      <if test="auditInfo.auditTime != null" >
+        AUDIT_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="aIDd != null" >
+        #{aIDd,jdbcType=VARCHAR},
+      </if>
+      <if test="auditInfo.aId != null" >
+        #{auditInfo.aId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditInfo.uId != null" >
+        #{auditInfo.uId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditInfo.roId != null" >
+        #{auditInfo.roId,jdbcType=VARCHAR},
+      </if>
+      <if test="mdId != null" >
+        #{mdId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditInfo.mId != null" >
+        #{auditInfo.mId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditInfo.auditResult != null" >
+        #{auditInfo.auditResult,jdbcType=INTEGER},
+      </if>
+      <if test="auditInfo.auditComment != null" >
+        #{auditInfo.auditComment,jdbcType=VARCHAR},
+      </if>
+      <if test="auditInfo.auditTime != null" >
+        #{auditInfo.auditTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+   <delete id="delAuditInfoDelete" parameterType="java.lang.String" >
+    delete from [dbo].[AUDIT_INFO_DELETE]
+    where M_ID = #{mId,jdbcType=VARCHAR}
+  </delete>
+
+
+
+
+</mapper>

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.RolePermissionDao">
+     <resultMap id="BaseResultMap" type="com.org.cygs.pojo.RolePermission">
+        <result column="RO_PER_ID" property="roPerId" jdbcType="VARCHAR" /> 
+        <result column="RO_ID" property="roId" jdbcType="VARCHAR" /> 
+        <result column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+        <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+        <result column="PER_ID" property="perId" jdbcType="VARCHAR" />
+        <result column="PERMISSION_ID" property="permissionId" jdbcType="VARCHAR" />
+        <result column="PERMISSION_NAME" property="permissionName" jdbcType="VARCHAR" />
+        <result column="PG_ID" property="pg_Id" jdbcType="VARCHAR" />
+        <result column="PERMISSION_GROUP_ID" property="permissionGroupId" jdbcType="VARCHAR" />
+        <result column="PERMISSION_GROUP_NAME" property="permissionGroupName" jdbcType="VARCHAR" />
+        <result column="IS_DISPLAY" property="isDisplay" jdbcType="VARCHAR" />
+        <result column="PAGE_ADDRESS" property="pageAddress" jdbcType="VARCHAR" />   
+    </resultMap>
+    
+      
+  
+    <sql id="Base_Column_List_1">  
+        [RO_ID],[PER_ID],[PERMISSION_ID],[PERMISSION_NAME],[PG_ID],[PERMISSION_GROUP_ID],[PERMISSION_GROUP_NAME],[IS_DISPLAY],[PAGE_ADDRESS]  
+    </sql> 
+    
+    <sql id="Base_Column_List_2">     
+        [RO_PER_ID],[IS_DISPLAY]  
+    </sql>
+    
+     <sql id="Base_Column_List_4">     
+       [RO_ID]
+      ,[ROLE_ID]
+      ,[ROLE_NAME]
+      ,[PER_ID]
+      ,[PERMISSION_ID] 
+      ,[PERMISSION_NAME]
+      ,[PERMISSION_GROUP_NAME]
+      ,[RO_PER_ID]  
+    </sql>
+    
+    <sql id="Base_Column_List_3">     
+       b.[RO_ID]
+      ,b.[ROLE_ID]
+      ,b.[ROLE_NAME]
+      ,a.[PER_ID]
+      ,a.[PERMISSION_ID]
+      ,a.[PG_ID]
+      ,a.[PERMISSION_NAME]
+      ,a.[PAGE_ADDRESS]
+      ,a.[PERMISSION_REMARK]      
+    </sql>  
+ 
+    <!-- 获取当前角色权限列表-->  
+    <select id="getRolePermissionByRoleId" resultMap="BaseResultMap">  
+        select  
+        <include refid="Base_Column_List_1" />  
+        from [dbo].[RoleAndPermission]
+        where [RO_ID] = #{RoleID,jdbcType=VARCHAR} 
+    </select>
+    
+    <!-- 获取所有角色权限列表-->
+    <select id="getAllRolePermission" resultMap="BaseResultMap">  
+        select  
+        <include refid="Base_Column_List_3" />  
+        from [dbo].[PERMISSION] a, [dbo].[ROLE] b
+        where 1=1 order by b.[ROLE_ID]
+    </select>
+    
+     <!-- 根据条件查询角色权限列表-->  
+    <select id="getRolePermission" parameterType="com.org.cygs.pojo.RolePermission" resultMap="BaseResultMap">  
+        select  
+        <include refid="Base_Column_List_3" />  
+        from [dbo].[PERMISSION] a, [dbo].[ROLE] b, [dbo].[PERMISSION_GROUP] c
+        <where>
+           a.[PG_ID] = c.[PG_ID]
+          <if test="permissionGroupId !=null and permissionGroupId !=''">
+		     and c.PERMISSION_GROUP_ID=#{permissionGroupId}
+		  </if>
+		  <if test="roleId !=null and roleId !=''">
+		     and b.ROLE_ID=#{roleId}
+		  </if>
+		  <if test="permissionId !=null and permissionId !=''">
+		     and a.PERMISSION_ID=#{permissionId}
+		  </if>
+		  <if test="permissionName !=null and permissionName !=''">
+		     and a.PERMISSION_NAME=#{permissionName}
+		  </if>
+
+		</where>
+        order by b.[ROLE_ID],c.PERMISSION_GROUP_ID,a.PERMISSION_ID
+    </select>
+    
+    
+     <!-- 根据条件查询角色权限列表-->  
+    <select id="getRolePermissionList" parameterType="java.util.Map" resultMap="BaseResultMap">  
+        select  
+        <include refid="Base_Column_List_4" />  
+        from [dbo].[ROLE_PER_ALL]
+        <where>
+          <if test="permissionGroupId !=null and permissionGroupId !=''">
+		     and PERMISSION_GROUP_ID=#{permissionGroupId}
+		  </if>
+		  <if test="roleId !=null and roleId !=''">
+		     and ROLE_ID=#{roleId}
+		  </if>
+		  <if test="permissionId !=null and permissionId !=''">
+		     and PERMISSION_ID=#{permissionId}
+		  </if>
+		  <if test="permissionName !=null and permissionName !=''">
+		     and PERMISSION_NAME=#{permissionName}
+		  </if>
+           <if test="select==1">
+		     and RO_PER_ID is not null
+		  </if>
+		   <if test="select==0">
+		     and RO_PER_ID is null
+		  </if>
+		</where>
+        order by [ROLE_ID],PERMISSION_GROUP_ID,PERMISSION_ID
+        Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+    
+     <!-- 根据条件查询角色权限列表-->  
+    <select id="getRolePermissionCount" parameterType="java.util.Map" resultType="java.lang.Integer">  
+        select count(*)
+        from [dbo].[ROLE_PER_ALL]
+        <where>
+          <if test="permissionGroupId !=null and permissionGroupId !=''">
+		     and PERMISSION_GROUP_ID=#{permissionGroupId}
+		  </if>
+		  <if test="roleId !=null and roleId !=''">
+		     and ROLE_ID=#{roleId}
+		  </if>
+		  <if test="permissionId !=null and permissionId !=''">
+		     and PERMISSION_ID=#{permissionId}
+		  </if>
+		  <if test="permissionName !=null and permissionName !=''">
+		     and PERMISSION_NAME=#{permissionName}
+		  </if>
+		   <if test="select==1">
+		     and RO_PER_ID is not null
+		  </if>
+		 <if test="select==0">
+		     and RO_PER_ID is null
+		  </if>
+		</where> 
+    </select>
+    
+    
+    <select id="getRolePermissionByRoIdAndPerID" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select  
+        <include refid="Base_Column_List_2" />  
+        from [dbo].[ROLE_PERMISSION]
+        where [RO_ID]= #{0} and [PER_ID] = #{1}
+    </select>
+    
+    
+    <!-- 删除某一权限组-->  
+    <delete id="deleteRolePermission" parameterType="String">  
+        delete from [dbo].[ROLE_PERMISSION]
+        where RO_PER_ID = #{roPerId,jdbcType=VARCHAR}
+    </delete>
+    
+    
+    
+    <!-- 添加角色权限-->
+	<insert id="addRolePermission" parameterType="com.org.cygs.pojo.RolePermission">
+		insert into [dbo].[ROLE_PERMISSION]
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+		    <if test="roPerId != null">
+				[RO_PER_ID],
+			</if>
+			<if test="isDisplay != null">
+				[IS_DISPLAY],
+			</if>
+			<if test="roId != null">
+				[RO_ID],
+			</if>
+			<if test="perId != null">
+				[PER_ID],
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		
+		     <if test="roPerId != null">
+				#{roPerId,jdbcType=VARCHAR},
+			</if>
+			<if test="isDisplay != null">
+				#{isDisplay,jdbcType=VARCHAR},
+			</if>
+			<if test="roId != null">
+				#{roId,jdbcType=VARCHAR},
+			</if>
+			<if test="perId != null">
+				#{perId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+    
+    
+    
+  </mapper>
+    

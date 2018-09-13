@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.AuditRoleDao" >
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.AuditRole" >
+    <id column="AR_ID" property="arId" jdbcType="VARCHAR" />
+    <result column="AUDIT_STEP" property="auditStep" jdbcType="INTEGER" />
+    <result column="RO_ID" property="roId" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="MT_ID" property="mtId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap type="com.org.cygs.pojo.AuditRole" id="y_audit_role">
+		<id column="AR_ID" property="arId"/>
+		<result column="AUDIT_STEP" property="auditStep"/>
+		<result column="RO_ID" property="roId"/>
+		<result column="ROLE_NAME" property="roName"/>
+		<result column="REMARK" property="remark"/>
+		<result column="MT_ID" property="mtId"/>
+		<result column="MT_NAME" property="mtName"/>
+	</resultMap>
+	
+  <sql id="Base_Column_List" >
+      AR_ID, AUDIT_STEP, RO_ID, REMARK, MT_ID
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    AR_ID,AUDIT_STEP,RO_ID,REMARK,MT_ID
+    from AUDIT_ROLE
+    where AR_ID = #{arId,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from AUDIT_ROLE
+    where AR_ID = #{arId,jdbcType=VARCHAR}
+  </delete>
+  
+  
+  <insert id="insertSelective" parameterType="com.org.cygs.pojo.AuditRole" >
+    insert into AUDIT_ROLE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="arId != null" >
+        AR_ID,
+      </if>
+      <if test="auditStep != null" >
+        AUDIT_STEP,
+      </if>
+      <if test="roId != null" >
+        RO_ID,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="mtId != null" >
+        MT_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="arId != null" >
+        #{arId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditStep != null" >
+        #{auditStep,jdbcType=INTEGER},
+      </if>
+      <if test="roId != null" >
+        #{roId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="mtId != null" >
+        #{mtId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.org.cygs.pojo.AuditRole" >
+    update AUDIT_ROLE
+    <set >
+      <if test="auditStep != null" >
+        AUDIT_STEP = #{auditStep,jdbcType=INTEGER},
+      </if>
+      <if test="roId != null" >
+        RO_ID = #{roId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="mtId != null" >
+        MT_ID = #{mtId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where AR_ID = #{arId,jdbcType=VARCHAR}
+  </update>
+  
+  	<select id="getAuditRoleListByMtId" parameterType="java.lang.String" resultMap="y_audit_role">
+		select distinct ar.[AR_ID],ar.[AUDIT_STEP],ar.[RO_ID],r.[ROLE_NAME],ar.[REMARK],ar.[MT_ID],mt.[MT_NAME]
+			from [dbo].[AUDIT_ROLE] ar,[dbo].[ROLE] r,[dbo].[MISSION_TYPE] mt
+			<where>
+				ar.[RO_ID] = r.[RO_ID] and ar.[MT_ID] = mt.[MT_ID]
+				<if test="_parameter != null and _parameter != ''">
+					and ar.[MT_ID] = #{mtId,jdbcType=VARCHAR}
+				</if>
+			</where>
+			order by ar.[MT_ID] asc,ar.[AUDIT_STEP] asc
+	</select>
+	
+	<select id="getCountById" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from
+			[dbo].[AUDIT_ROLE]
+			where MT_ID = #{mtId}
+	</select>
+	
+  	<select id="getAuditRoleById" parameterType="java.lang.String" resultMap="y_audit_role">
+		select distinct ar.[AR_ID],ar.[AUDIT_STEP],ar.[RO_ID],r.[ROLE_NAME],ar.[REMARK],ar.[MT_ID],mt.[MT_NAME]
+			from [dbo].[AUDIT_ROLE] ar,[dbo].[ROLE] r,[dbo].[MISSION_TYPE] mt
+			<where>
+				ar.[RO_ID] = r.[RO_ID] and ar.[MT_ID] = mt.[MT_ID]
+				<if test="_parameter != null and _parameter != ''">
+					and ar.[AR_ID] = #{arId}
+				</if>
+			</where>
+	</select>
+	
+	
+	
+	<!-- 根据角色ID和审核步骤获取审核信息 -->
+	  <select id="getArByRoAndAstep" parameterType="java.util.Map" resultMap="BaseResultMap">  
+        select  
+        AUDIT_STEP,MT_ID
+        from [dbo].[AUDIT_ROLE]
+        <where>       
+         <if test="auditStep !=null and auditStep !=''">
+		     and AUDIT_STEP=#{auditStep}
+		  </if>
+		  <if test="roId !=null and roId !=''">
+		     and RO_ID=#{roId}
+		  </if>
+		</where>
+    </select>  
+    
+    
+    <!-- 根据角色ID和审核步骤获取审核信息 -->
+	  <select id="getRoleNameByMtAndAstep" parameterType="java.lang.Integer" resultType="java.lang.String">  
+        select r.ROLE_NAME
+        from [dbo].[AUDIT_ROLE] ai, [dbo].[ROLE] r, [dbo].[MISSION_TYPE] mt
+        where ai.RO_ID = r.RO_ID and ai.MT_ID = mt.MT_ID and mt.MT_CODE = #{0} and ai.AUDIT_STEP = #{1}
+    </select>
+    
+    
+    <!-- 根据角色ID和审核步骤获取审核信息 -->
+	  <select id="getMaxStepByMtId" parameterType="java.lang.String" resultType="java.lang.Integer">  
+        select MAX(AUDIT_STEP)
+        from [dbo].[AUDIT_ROLE]
+        where MT_ID = #{mtId}
+    </select>
+    
+    <!-- 根据角色ID和审核步骤获取审核信息 -->
+	  <select id="getCexStepByMtIdAndRoId" parameterType="java.lang.String" resultType="java.lang.Integer">  
+        select AUDIT_STEP
+        from [dbo].[AUDIT_ROLE]
+        where MT_ID = #{0} and RO_ID = #{1}
+    </select>
+	
+	<!-- 通过任务书类型编号获取审核信息 -->
+	<select id="getAuditRoleByMtCode" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		select * from
+			[dbo].[AUDIT_ROLE] ar,[dbo].[MISSION_TYPE] mt
+			where ar.[MT_ID] = mt.[MT_ID] and mt.[MT_CODE] = #{mtCode,jdbcType=INTEGER}
+			order by ar.[AUDIT_STEP] desc
+	</select>
+	<!-- 获取审核信息列表 -->
+	<select id="getAuditRoleList" parameterType="java.util.Map" resultMap="y_audit_role">
+		select *
+			from [dbo].[AUDIT_ROLE] ar,[dbo].[ROLE] r,[dbo].[MISSION_TYPE] mt
+			<where>
+				ar.[RO_ID] = r.[RO_ID] and ar.[MT_ID] = mt.[MT_ID]
+				<if test="mtId != null and mtId != ''">
+					and ar.[MT_ID] = #{mtId}
+				</if>
+			</where>
+		order by ar.[MT_ID] asc
+    	Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+	</select>
+	
+	<!-- 获取审核信息数量 -->	
+	<select id="getAuditRoleCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(*)
+			from [dbo].[AUDIT_ROLE] ar,[dbo].[ROLE] r,[dbo].[MISSION_TYPE] mt
+			<where>
+				ar.[RO_ID] = r.[RO_ID] and ar.[MT_ID] = mt.[MT_ID]
+				<if test="mtId != null and mtId != ''">
+					and ar.[MT_ID] = #{mtId}
+				</if>
+			</where>
+	</select>
+		
+</mapper>

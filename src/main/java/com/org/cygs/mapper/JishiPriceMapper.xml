@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.JishiPriceDao" >
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.JishiPrice" >
+    <id column="JSP_ID" property="jspId" jdbcType="VARCHAR" />
+    <result column="UN_ID" property="unId" jdbcType="VARCHAR" />
+    <result column="UN_NAME" property="unName" jdbcType="VARCHAR" />
+    <result column="PRICE" property="price" jdbcType="DOUBLE" />
+    <result column="PR_ID" property="prId" jdbcType="VARCHAR" />
+    <result column="PR_NAME" property="prName" jdbcType="VARCHAR" />
+    <result column="PC_P_ID" property="pcPId" jdbcType="VARCHAR" />
+    <result column="UNIT_NUMBER" property="unitNumber" jdbcType="VARCHAR" />
+    <result column="CU_ID" property="cuId" jdbcType="VARCHAR" />
+    <result column="CU_NAME" property="cuName" jdbcType="VARCHAR" />
+    <result column="P_ID" property="pId" jdbcType="VARCHAR" />
+    <result column="P_NAME" property="pName" jdbcType="VARCHAR" />
+    <result column="PS_ID" property="psId" jdbcType="VARCHAR" />
+    <result column="PS_NAME" property="psName" jdbcType="VARCHAR" />
+    <result column="O_ID" property="oId" jdbcType="VARCHAR" />
+    <result column="O_NAME" property="oName" jdbcType="VARCHAR" />
+    
+	
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+      JSP_ID, UN_ID, PRICE, PR_ID, PC_P_ID, CU_ID, P_ID, PS_ID, O_ID
+  </sql>
+  
+  <sql id="Column_List">
+       jp.JSP_ID, jp.UN_ID, u.UN_NAME, jp.PRICE, jp.PR_ID, p.PR_NAME, jp.PC_P_ID, prpc.UNIT_NUMBER, jp.CU_ID, cu.CU_NAME, jp.P_ID,
+       pa.P_NAME, jp.PS_ID, pp.PS_NAME, jp.O_ID, o.O_NAME
+  </sql>
+  
+  <sql id="Table_List">  
+      JISHI_PRICE jp, PROJECT p, PART pa, PART_POSITION pp, OPERATION o, UNIT u, CHECK_UNIT cu, PR_INDEX_PC prpc
+  </sql>
+  
+  <sql id="Condition_List">
+        jp.UN_ID=u.UN_ID and jp.PR_ID=p.PR_ID and jp.PC_P_ID=prpc.PC_P_ID and jp.CU_ID=cu.CU_ID and jp.P_ID=pa.P_ID and jp.PS_ID=pp.PS_ID
+        and jp.O_ID=o.O_ID
+  </sql>
+  
+  
+  <select id="selectJishiUnitPrice" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+	<include refid="Column_List" />
+ 	from
+ 	<include refid="Table_List" />
+	where
+	<include refid="Condition_List" /> and
+	jp.PR_ID=#{0} and jp.CU_ID=#{1} and jp.PC_P_ID=#{2}
+  </select>
+  
+</mapper>

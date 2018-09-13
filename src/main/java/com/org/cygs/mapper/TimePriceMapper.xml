@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.TimePriceDao" >    
+    <resultMap id="BaseResultMap" type="com.org.cygs.pojo.TimePrice">  
+        <result column="JSP_ID" property="jspId" jdbcType="VARCHAR" /> 
+        <result column="UN_NAME" property="unName" jdbcType="VARCHAR" />
+        <result column="UN_ID" property="unId" jdbcType="VARCHAR" />  
+        <result column="PRICE" property="price" jdbcType="FLOAT" />   
+        <result column="O_NAME" property="jobName" jdbcType="VARCHAR" /> 
+        <result column="O_ID" property="jobKey" jdbcType="VARCHAR" />    
+        <result column="PR_NAME" property="prName" jdbcType="VARCHAR" />
+        <result column="PR_ID" property="prId" jdbcType="VARCHAR" />  
+        <result column="PS_NAME" property="psName" jdbcType="VARCHAR" />
+        <result column="PS_ID" property="psId" jdbcType="VARCHAR" />  
+        <result column="UNIT_NUMBER" property="pcpNumber" jdbcType="VARCHAR" />
+        <result column="PC_P_ID" property="pcpId" jdbcType="VARCHAR" />  
+        <result column="CU_NAME" property="cuName" jdbcType="VARCHAR" />
+        <result column="CU_ID" property="cuId" jdbcType="VARCHAR" />   
+        <result column="P_NAME" property="pName" jdbcType="VARCHAR" /> 
+        <result column="P_ID" property="pId" jdbcType="VARCHAR" />  
+    </resultMap>  
+  
+     <sql id="OP_Column_List">
+      JSP_ID, O_ID, UN_ID, PRICE, PR_ID, PS_ID, PC_P_ID, CU_ID,P_ID
+     </sql>
+     
+    <sql id="Table_List">  
+        [dbo].[JISHI_PRICE] a,[dbo].[OPERATION] b,[dbo].[UNIT] c,
+        [dbo].[PROJECT] d,[dbo].[PART_POSITION] e,[dbo].[PR_INDEX_PC] f,
+        [dbo].[CHECK_UNIT] g,[dbo].[PART] i
+    </sql>  
+    
+    <sql id="Column_List">
+        a.[JSP_ID],a.[PRICE],a.[O_ID],b.[O_NAME],a.[UN_ID],c.[UN_NAME],a.[PR_ID],d.[PR_NAME],
+        a.[PS_ID],e.[PS_NAME],a.[PC_P_ID],f.[UNIT_NUMBER],a.[CU_ID],g.[CU_NAME],
+        i.[P_ID],i.[P_NAME]
+    </sql>
+  
+    <sql id="CheckOption_List">
+        a.[O_ID]=b.[O_ID]  and a.[UN_ID]=c.[UN_ID] and  a.[PR_ID]=d.[PR_ID] and 
+        a.[PS_ID]=e.[PS_ID] and a.[PC_P_ID]=f.[PC_P_ID] and 
+        a.[CU_ID]=g.[CU_ID]  and a.[P_ID]=i.[P_ID]
+    </sql>
+    
+    <sql id="Option_List"> 
+     <!-- 表对应编号  op,a o,b un,c pr,d  ps,e  pcp,f  cu,g fs,h p,i -->
+       
+        <if test="jspId !=null and jspId !=''">
+		     and a.[JSP_ID]=#{jspId}
+		  </if>
+         <if test="price !=null and price !=''">
+		     and a.[PRICE]=#{price}
+		  </if>
+		  <if test="jobKey !=null and jobKey !=''">
+		     and b.[O_ID]=#{jobKey}
+		  </if>
+
+		  <if test="prId !=null and prId !=''">
+		     and d.[PR_ID]=#{prId}
+		  </if>
+		  <if test="psId !=null and psId !=''">
+		     and e.[PS_ID]=#{psId}
+		  </if>
+		  <if test="pcpId !=null and pcpId !=''">
+		     and f.[PC_P_ID]=#{pcpId}
+		  </if>
+		  <if test="pcpNumber !=null and pcpNumber !=''">
+		     and f.[UNIT_NUMBER]=#{pcpNumber}
+		  </if>
+		  <if test="cuName !=null and cuName !=''">
+		     and g.[CU_NAME]=#{cuName}
+		  </if>
+          <if test="cuId !=null and cuId !=''">
+		     and g.[CU_ID]=#{cuId}
+		  </if>
+		 <if test="pId !=null and pId !=''">
+		     and i.[P_ID]=#{pId}
+		  </if>
+		  <if test="pName !=null and pName !=''">
+		     and i.[P_NAME]=#{pName}
+		  </if>
+		  </sql>
+    <sql id="ViewOfContract">
+            select  
+        <include refid="Column_List" />  
+        from <include refid="Table_List"></include>
+        <where>
+        <include refid="CheckOption_List"></include>
+        <include refid="Option_List"></include>
+		</where>
+        order by [JSP_ID] asc  
+        </sql>  
+        
+    <select id="getTimePriceCount" parameterType="java.util.Map" resultType="java.lang.Integer"> 
+        select count(*)
+        from<include refid="Table_List"></include>
+        <where>
+        <include refid="CheckOption_List"></include>
+        <include refid="Option_List"></include>
+		</where>
+    </select>  
+    
+    <select id="selectTimePriceList" parameterType="java.util.Map" resultMap="BaseResultMap">  
+       <include refid="ViewOfContract"></include>
+       Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+    <!-- 查询合同单价-->  
+    <select id="selectTimePrices" parameterType="com.org.cygs.pojo.TimePrice" resultMap="BaseResultMap">  
+       <include refid="ViewOfContract"></include>
+    </select>
+    
+
+      
+    <!-- 批量插入单价 -->  
+    <insert id="insertTimePriceByBatch" parameterType="java.util.List" >  
+    insert into [dbo].[JISHI_PRICE]  
+       (<include refid="OP_Column_List"></include>)  
+    values  
+         <foreach collection="list" item="item" index="index" separator=",">  
+      (  
+             #{item.jspId,jdbcType=VARCHAR},  
+             #{item.jobKey,jdbcType=VARCHAR},  
+             #{item.unit,jdbcType=VARCHAR}, 
+             #{item.price,jdbcType=FLOAT},
+             #{item.prId,jdbcType=VARCHAR},
+             #{item.psId,jdbcType=VARCHAR},    
+             #{item.pcpId,jdbcType=VARCHAR}, 
+             #{item.cuId,jdbcType=VARCHAR}, 
+             #{item.pId,jdbcType=VARCHAR},  
+      ) 
+         </foreach>  
+         
+    </insert>  
+  
+
+      
+    <!-- 批量删除单价 -->  
+    <delete id="deleteTimePriceByBatch" parameterType="java.lang.String" >  
+     delete from [dbo].[JISHI_PRICE]  
+     where [JSP_ID] =#{_parameter,jdbcType=VARCHAR}  
+        
+    </delete>  
+  
+    <!-- 更新合同单价-->  
+    <update id="updateTimePrice" parameterType="com.org.cygs.pojo.TimePrice" >    
+        update [dbo].[JISHI_PRICE]    
+        <set >    
+          <if test="price != null" >    
+            [price] = #{price,jdbcType=VARCHAR},    
+          </if>    
+         
+        </set>    
+        where [JSP_ID] = #{jspId,jdbcType=INTEGER}   
+    </update>
+    
+    
+          
+    <!-- 批量插入单价 -->  
+    <insert id="insertTimePrice" parameterType="com.org.cygs.pojo.TimePrice" >  
+    insert into [dbo].[JISHI_PRICE]  
+       (<include refid="OP_Column_List"></include>)  
+    values  
+        (
+             #{jspId,jdbcType=VARCHAR},  
+             #{jobKey,jdbcType=VARCHAR},  
+             #{unId,jdbcType=VARCHAR}, 
+             #{price,jdbcType=FLOAT},
+             #{prId,jdbcType=VARCHAR},
+             #{psId,jdbcType=VARCHAR},    
+             #{pcpId,jdbcType=VARCHAR}, 
+             #{cuId,jdbcType=VARCHAR}, 
+             #{pId,jdbcType=VARCHAR}  
+      
+          )
+         
+    </insert>  
+</mapper>  

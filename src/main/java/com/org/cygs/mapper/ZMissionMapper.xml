@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.ZMissionDao" >
+  <resultMap id="ZMissionMap" type="com.org.cygs.pojo.ZMission" >
+    <id column="Z_M_ID" property="zMId" jdbcType="VARCHAR" />
+    <result column="Z_PR_ID" property="zPrId" jdbcType="VARCHAR" />
+    <result column="PR_NAME" property="prName" jdbcType="VARCHAR" />
+    <result column="BEGIN_DATE" property="beginDate" jdbcType="TIMESTAMP" />
+    <result column="END_DATE" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="M_CODE" property="mCode" jdbcType="VARCHAR" />
+    <result column="CU_ID" property="cuId" jdbcType="VARCHAR" />
+    <result column="SUBMIT_TIME" property="submitTime" jdbcType="TIMESTAMP" />
+    <result column="STATUS" property="status" jdbcType="INTEGER" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="MT_ID" property="mtId" jdbcType="VARCHAR" />
+    <result column="MT_CODE" property="mtCode" jdbcType="INTEGER" />
+    <result column="EDTION_ID" property="edtionId" jdbcType="INTEGER" />
+    <result column="Z_PC_P_ID" property="zPcPId" jdbcType="VARCHAR" />
+    <result column="UNIT_NUMBER" property="unitNumber" jdbcType="VARCHAR" />
+    <result column="REMARK1" property="remark1" jdbcType="VARCHAR" />
+    <result column="REMARK2" property="remark2" jdbcType="VARCHAR" />
+    <result column="ISOVERDUE" property="isoverdue" jdbcType="INTEGER" />
+    <result column="SUPERVISOR" property="supervisor" jdbcType="VARCHAR" />
+    <result column="LAST_AUDIT_TIME" property="lastAuditTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+ 
+  <sql id="Column_List">
+       m.Z_M_ID,m.M_CODE,m.BEGIN_DATE,m.END_DATE,m.SUBMIT_TIME,m.STATUS,pc.UNIT_NUMBER,m.CU_ID,pr.PR_NAME,m.MT_ID
+    </sql>
+    
+  <sql id="Table_List">  
+      [dbo].[Z_MISSION] m,[dbo].[Z_PR_INDEX_PC] pc,[dbo].[Z_PROJECT] pr,[dbo].[MISSION_TYPE] mt
+  </sql>
+  
+  <sql id="Condition_List">
+        m.Z_PR_ID = pr.Z_PR_ID and m.Z_PC_P_ID = pc.Z_PC_P_ID and m.MT_ID = mt.MT_NAME
+   </sql>
+  
+	<select id="getZMissionByMId" parameterType="java.lang.String" resultMap="ZMissionMap">  
+        select
+        <include refid="Column_List" />, m.SUPERVISOR,mt.MT_CODE
+        from 
+        <include refid="Table_List" />
+       <where>
+        <include refid="Condition_List" /> and m.Z_M_ID = #{zMId}
+	   </where>     
+    </select>
+  
+
+
+    <!-- 查看任务书总记录数-->  
+    <select id="getZCount" parameterType="java.util.Map" resultType="java.lang.Integer">  
+        select count(*)
+        from 
+        <include refid="Table_List" />
+        <where>
+        <include refid="Condition_List" />
+        <if test="mtId !=null and mtId !=''">
+		     and m.MT_ID =#{mtId}
+		</if>
+		<if test="mCode !=null and mCode !=''">
+		     and m.M_CODE =#{mCode}
+		</if>
+		<!-- 查询条件 -->
+		<if test="zPrId != null and zPrId != ''">
+		     and m.Z_PR_ID = #{zPrId}
+		</if>
+		<if test="zPcPId != null and zPcPId != ''">
+		     and m.Z_PC_P_ID = #{zPcPId}
+		</if>
+		<if test="cuId != null and cuId !=''">
+		     and m.CU_ID = #{cuId}
+		</if>
+		
+		</where>     
+    </select>
+    
+  
+  <!-- 通过筛选条件查看任务书动态选择并分页-->  
+    <select id="getZMissionList" parameterType="java.util.Map" resultMap="ZMissionMap">  
+        select
+        <include refid="Column_List" />,mt.MT_CODE
+        from
+        <include refid="Table_List" />
+        <where>
+        <include refid="Condition_List" />
+        <if test="mtId !=null and mtId !=''">
+		     and m.MT_ID =#{mtId}
+		</if>
+		<if test="mCode !=null and mCode !=''">
+		     and m.M_CODE =#{mCode}
+		</if>
+		<!-- 查询条件 -->
+		<if test="zPrId != null and zPrId != ''">
+		     and m.Z_PR_ID = #{zPrId}
+		</if>
+		<if test="zPcPId != null and zPcPId != ''">
+		     and m.Z_PC_P_ID = #{zPcPId}
+		</if>
+		<if test="cuId != null and cuId !=''">
+		     and m.CU_ID = #{cuId}
+		</if>
+		
+        </where>
+        order by m.[SUBMIT_TIME] desc
+        Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+
+
+
+  <insert id="insertSelective" parameterType="com.org.cygs.pojo.ZMission" >
+    insert into Z_MISSION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="zMId != null" >
+        Z_M_ID,
+      </if>
+      <if test="zPrId != null" >
+        Z_PR_ID,
+      </if>
+      <if test="beginDate != null" >
+        BEGIN_DATE,
+      </if>
+      <if test="endDate != null" >
+        END_DATE,
+      </if>
+      <if test="mCode != null" >
+        M_CODE,
+      </if>
+      <if test="cuId != null" >
+        CU_ID,
+      </if>
+      <if test="submitTime != null" >
+        SUBMIT_TIME,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="mtId != null" >
+        MT_ID,
+      </if>
+      <if test="edtionId != null" >
+        EDTION_ID,
+      </if>
+      <if test="dpId != null" >
+        DP_ID,
+      </if>
+      <if test="zPcPId != null" >
+        Z_PC_P_ID,
+      </if>
+      <if test="remark1 != null" >
+        REMARK1,
+      </if>
+      <if test="remark2 != null" >
+        REMARK2,
+      </if>
+      <if test="isoverdue != null" >
+        ISOVERDUE,
+      </if>
+      <if test="supervisor != null" >
+        SUPERVISOR,
+      </if>
+      <if test="contractType != null" >
+        CONTRACT_TYPE,
+      </if>
+      <if test="lastAuditTime != null" >
+        LAST_AUDIT_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="zMId != null" >
+        #{zMId,jdbcType=VARCHAR},
+      </if>
+      <if test="zPrId != null" >
+        #{zPrId,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mCode != null" >
+        #{mCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cuId != null" >
+        #{cuId,jdbcType=VARCHAR},
+      </if>
+      <if test="submitTime != null" >
+        #{submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="mtId != null" >
+        #{mtId,jdbcType=VARCHAR},
+      </if>
+      <if test="edtionId != null" >
+        #{edtionId,jdbcType=INTEGER},
+      </if>
+      <if test="dpId != null" >
+        #{dpId,jdbcType=VARCHAR},
+      </if>
+      <if test="zPcPId != null" >
+        #{zPcPId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark1 != null" >
+        #{remark1,jdbcType=VARCHAR},
+      </if>
+      <if test="remark2 != null" >
+        #{remark2,jdbcType=VARCHAR},
+      </if>
+      <if test="isoverdue != null" >
+        #{isoverdue,jdbcType=INTEGER},
+      </if>
+      <if test="supervisor != null" >
+        #{supervisor,jdbcType=VARCHAR},
+      </if>
+      <if test="contractType != null" >
+        #{contractType,jdbcType=INTEGER},
+      </if>
+      <if test="lastAuditTime != null" >
+        #{lastAuditTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+</mapper>

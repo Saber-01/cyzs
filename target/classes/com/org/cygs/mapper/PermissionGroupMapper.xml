@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.PermissionGroupDao" >    
+        <resultMap id="BaseResultMap" type="com.org.cygs.pojo.PermissionGroup">        
+        
+        <result column="PG_ID" property="pgId" jdbcType="VARCHAR" />
+        <result column="PERMISSION_GROUP_ID" property="permissionGroupId" jdbcType="VARCHAR" />
+        <result column="PERMISSION_GROUP_NAME" property="permissionGroupName" jdbcType="VARCHAR" />
+        <result column="PERMISSION_GROUP_REMARK" property="permissionGroupRemark" jdbcType="VARCHAR" />
+    </resultMap>
+    
+      
+  
+    <sql id="Base_Column_List_1">  
+        [PG_ID],[PERMISSION_GROUP_ID],[PERMISSION_GROUP_NAME]  
+    </sql> 
+    
+    <sql id="Base_Column_List_2">  
+        [PG_ID],[PERMISSION_GROUP_ID],[PERMISSION_GROUP_NAME],[PERMISSION_GROUP_REMARK]  
+    </sql>
+    <sql id="Base_Column_List_3">  
+        [PERMISSION_GROUP_ID],[PERMISSION_GROUP_NAME],[PERMISSION_GROUP_REMARK]  
+    </sql>     
+ 
+ 
+ <select id="getPgIdByPgName" parameterType="java.lang.String" resultType="java.lang.String">  
+        select PG_ID
+        from [dbo].[PERMISSION_GROUP]
+        where [PERMISSION_GROUP_NAME] = #{pgName,jdbcType=VARCHAR}
+    </select> 
+    
+ <select id="getMaxPGroupId" resultType="java.lang.String">  
+        select MAX(PERMISSION_GROUP_ID) 
+        from [dbo].[PERMISSION_GROUP]
+    </select>
+ 
+    <!-- 获取当前角色下的权限组-->  
+    <select id="getRolePermissionGroupByRoId" resultMap="BaseResultMap">  
+        select DISTINCT
+        <include refid="Base_Column_List_1" />  
+        from [dbo].[RoleAndPermission]
+        where [RO_ID] = #{RoId,jdbcType=VARCHAR}
+        order by [PERMISSION_GROUP_ID] asc
+    </select> 
+    
+    <!-- 查询权限组-->  
+    <select id="getPermissionGroup" parameterType="com.org.cygs.pojo.PermissionGroup" resultMap="BaseResultMap">  
+        select DISTINCT
+        <include refid="Base_Column_List_2" />  
+        from [dbo].[PERMISSION_GROUP]
+        <where>
+         <if test="permissionGroupId !=null and permissionGroupId !=''">
+		     and PERMISSION_GROUP_ID=#{permissionGroupId}
+		  </if>
+		  <if test="permissionGroupName !=null and permissionGroupName !=''">
+		     and PERMISSION_GROUP_NAME=#{permissionGroupName}
+		  </if>  
+		</where>
+        order by [PERMISSION_GROUP_ID] asc
+    </select>
+    
+    
+    <select id="getPermissionGroupList" parameterType="java.util.Map" resultMap="BaseResultMap">  
+        select
+        <include refid="Base_Column_List_2" />  
+        from [dbo].[PERMISSION_GROUP]
+        <where>
+         <if test="permissionGroupId !=null and permissionGroupId !=''">
+		     and PERMISSION_GROUP_ID=#{permissionGroupId}
+		  </if>
+		  <if test="permissionGroupName !=null and permissionGroupName !=''">
+		     and PERMISSION_GROUP_NAME=#{permissionGroupName}
+		  </if>  
+		</where>
+        order by [PERMISSION_GROUP_ID] asc
+        Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+    <select id="getPermissionGroupCount" parameterType="java.util.Map" resultType="java.lang.Integer">  
+        select count(*)
+        from [dbo].[PERMISSION_GROUP]
+        <where>
+         <if test="permissionGroupId !=null and permissionGroupId !=''">
+		     and PERMISSION_GROUP_ID=#{permissionGroupId}
+		  </if>
+		  <if test="permissionGroupName !=null and permissionGroupName !=''">
+		     and PERMISSION_GROUP_NAME=#{permissionGroupName}
+		  </if>  
+		</where>
+    </select>
+    
+    
+    <!-- 获得所有权限组-->  
+    <select id="getAllPermissionGroup" resultMap="BaseResultMap">  
+        select DISTINCT
+        <include refid="Base_Column_List_2" />  
+        from [dbo].[PERMISSION_GROUP]
+        order by [PERMISSION_GROUP_ID] asc
+    </select>
+    
+    
+    <!-- 获取pgId对应的权限组-->  
+    <select id="getPermissionGroupBypgId" parameterType="String" resultMap="BaseResultMap">  
+        select DISTINCT
+        <include refid="Base_Column_List_2" />  
+        from [dbo].[PERMISSION_GROUP]
+        where PG_ID = #{pgId,jdbcType=VARCHAR}
+    </select>
+    
+     <!-- 管理员修改权限组信息-->  
+    <select id="editPermissionGroup" parameterType="com.org.cygs.pojo.PermissionGroup">  
+        update [dbo].[PERMISSION_GROUP]
+          <set >    
+          <if test="permissionGroupId != null" >    
+            PERMISSION_GROUP_ID = #{permissionGroupId,jdbcType=VARCHAR},    
+          </if>    
+          <if test="permissionGroupName != null" >    
+            PERMISSION_GROUP_NAME = #{permissionGroupName,jdbcType=VARCHAR},    
+          </if>    
+          <if test="permissionGroupRemark != null" >    
+            PERMISSION_GROUP_REMARK = #{permissionGroupRemark,jdbcType=VARCHAR},    
+          </if>    
+        </set>    
+        where PG_ID = #{pgId,jdbcType=VARCHAR}  
+    </select>
+    
+    <!-- 删除某一权限组-->  
+    <select id="delPermissionGroup" parameterType="String">  
+        delete from [dbo].[PERMISSION_GROUP]
+        where PG_ID = #{pgId,jdbcType=VARCHAR}
+    </select>
+
+	<!-- 添加某一权限组 -->
+	<insert id="addPermissionGroup" parameterType="com.org.cygs.pojo.PermissionGroup">
+		insert into [dbo].[PERMISSION_GROUP]
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="pgId != null">
+				PG_ID,
+			</if>
+			<if test="permissionGroupId != null">
+				PERMISSION_GROUP_ID,
+			</if>
+			<if test="permissionGroupName != null">
+				PERMISSION_GROUP_NAME,
+			</if>
+			<if test="permissionGroupRemark != null">
+				PERMISSION_GROUP_REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="pgId != null">
+				#{pgId,jdbcType=VARCHAR},
+			</if>
+			<if test="permissionGroupId != null">
+				#{permissionGroupId,jdbcType=VARCHAR},
+			</if>
+			<if test="permissionGroupName != null">
+				#{permissionGroupName,jdbcType=VARCHAR},
+			</if>
+			<if test="permissionGroupRemark != null">
+				#{permissionGroupRemark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+    
+    
+  </mapper>

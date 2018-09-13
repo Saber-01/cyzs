@@ -1,0 +1,146 @@
+package com.org.cygs.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.ui.Model;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.org.cygs.pojo.PagePojo;
+import com.org.cygs.pojo.Part;
+import com.org.cygs.pojo.ZPart;
+import com.org.cygs.service.PartService;
+import com.org.cygs.service.ZPartService;
+
+@Controller
+@RequestMapping("/part")
+public class PartController {
+	@Autowired
+	private PartService partService;
+	@Autowired
+	private ZPartService zPartService;
+	
+
+	@RequestMapping("/partList")
+	public String partList(HttpServletRequest request,Model model){
+		
+		List<Part> partList=partService.getAllPart();
+		model.addAttribute("partList",partList);
+		
+		return "listPart";
+	}
+	
+	
+	//删除分部
+	@RequestMapping("/deletePart/{id}")
+	public @ResponseBody String deletePart(@PathVariable("id") String pId){
+		System.out.println("deletePart");
+		try {
+			partService.deletePart(pId);
+			return "1";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "0";
+		}		
+	}
+	
+	
+	//跳转到修改节面
+	@RequestMapping("/toEditPart/{pId}")
+	public String toEditPart(@PathVariable("pId") String pId,Model model){
+		System.out.println(pId);
+		Part part=partService.getPart(pId);
+		System.out.println(pId);
+		model.addAttribute("part",part);
+		return "editPart";
+	}
+	//修改分部信息
+	@RequestMapping("/editPart")
+	public @ResponseBody String editPart(HttpServletRequest request){
+		Part part=new Part();
+		part.setpId((String)request.getParameter("pId"));
+		part.setPartId((String)request.getParameter("partId"));
+		part.setpName((String)request.getParameter("pName"));
+		System.out.println(part.getPartId()+part.getpId()+part.getpName()+"   "+part.getpId());
+		try {
+			partService.updatePart(part);
+			return "1";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "0";
+		}						
+		
+	}
+	//跳转到添加界面
+	@RequestMapping("/toAddPart")
+	public String  toAddPart(Model model){
+		List<Part> pList=partService.getAllPart();
+		model.addAttribute(pList);
+		return "addPart";
+	 }
+	
+	//添加分部
+	@RequestMapping("/addPart")
+	public @ResponseBody String addPart(HttpServletRequest request){
+		List<Part> pList=partService.getAllPart();
+		String partId;
+		if (pList.size()>0) {
+			int pSize=pList.size()-1;
+			String pCode=pList.get(pSize).getPartId();
+		    partId=com.org.cygs.util.common.StringUtil.autoIncrement(pCode);
+		}else {
+			partId="0001";
+		}
+		
+		
+		
+		Part part=new Part();
+		String pName=(String)request.getParameter("pName");			
+        part.setPartId(partId);	
+		
+		part.setpName(pName);
+		
+		try {
+			partService.addPart(part);
+			/*Part newPart = partService.getNewPartByPCode(partId);
+			ZPart zPart = new ZPart();
+			zPart.setzPId(newPart.getpId());
+			zPart.setpCode(partId);
+			zPart.setpName(pName);
+			// 同时插入结算表--不太好
+			zPartService.insertZPart(zPart);*/
+			return "1";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "0";
+		}		
+		
+	}
+	
+	
+	@RequestMapping("/getAllPart")
+    public @ResponseBody PagePojo getAllPart(@RequestBody Map<String, String> map){
+		
+		int pageNum=Integer.parseInt(map.get("pageNo"));
+		PagePojo<Part> partPage=partService.partPage(pageNum, 15);
+		
+		
+		return partPage;
+		
+	}
+	
+	@RequestMapping(value="/getAllPart1")
+	public @ResponseBody Map<String, Object> getAllPart1(@RequestParam Map<String, Object> map){
+		
+		return partService.getPartList(map);
+	}
+	
+}

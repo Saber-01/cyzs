@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.JobDao" >    
+    <resultMap id="BaseResultMap" type="com.org.cygs.pojo.Job">  
+        <result column="O_ID" property="jobKey" jdbcType="VARCHAR" />  
+        <result column="O_CODE" property="jobId" jdbcType="CHAR" /> 
+        <result column="O_NAME" property="jobName" jdbcType="VARCHAR" />  
+        <result column="REMARK" property="remark" jdbcType="VARCHAR" />   
+        <result column="PS_NAME" property="psName" jdbcType="VARCHAR" />
+        <result column="UN_NAME" property="unName" jdbcType="VARCHAR" />  
+        <result column="PS_ID" property="psId" jdbcType="VARCHAR" />
+        <result column="UN_ID" property="unId" jdbcType="VARCHAR" />     
+    </resultMap>  
+    <sql id="Base_Column_List"></sql>
+    
+    <sql id="Column_List">
+         a.[O_ID],a.[O_CODE],a.[O_NAME],a.[REMARK],b.[PS_NAME],c.[UN_NAME],
+         b.[PS_ID],c.[UN_ID]
+    </sql>
+  
+    <sql id="Table_List">  
+         [dbo].[OPERATION] a,[dbo].[PART_POSITION] b,[dbo].[UNIT] c
+    </sql>  
+  
+    <sql id="CheckOption_List">
+         a.[PS_ID]=b.[PS_ID] and a.[UN_ID]=c.[UN_ID]
+    </sql>
+    
+    <!-- 查询工作项目-->  
+    <select id="selectJobs" parameterType="com.org.cygs.pojo.Job" resultMap="BaseResultMap">
+       select  
+        <include refid="Column_List" />  
+        from <include refid="Table_List"></include>
+        <where>
+        <include refid="CheckOption_List"></include>  
+         <if test="jobName !=null and jobName !=''">
+		     and a.[O_NAME]=#{jobName}
+		  </if>
+		  <if test="jobKey !=null and jobKey !=''">
+		     and a.[O_ID]=#{jobKey}
+		  </if>
+		   <if test="unId !=null and unId !=''">
+		     and c.[UN_ID]=#{unId}
+		  </if>
+		  <if test="psName !=null and psName !=''">
+		     and b.[PS_NAME]=#{psName}
+		  </if>
+		  <if test="psId !=null and psId !=''">
+		     and a.[PS_ID]=#{psId}
+		  </if>
+		</where>
+        order by [O_CODE] asc  
+    </select>  
+    
+    
+     <!--通过主键查询工作项目-->
+     <select id="selectJob" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select  *
+        from [dbo].[OPERATION] op,[dbo].[UNIT] u
+        where op.[UN_ID]=u.[UN_ID] and O_ID = #{jobKey} 
+    </select>
+    
+       <!-- 通过给定的工程部位主键查询所有属于它的工作项目-->  
+     <select id="selectJobByPsId"  parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select  distinct
+        [O_NAME],[O_ID]
+        from [dbo].[OPERATION]
+        <where>
+        <if test="_parameter !=null and _parameter !=''">       
+        [PS_ID]=#{_parameter}
+        </if>
+        </where>
+        
+    </select>
+
+  
+ 
+    <!-- 删除分部-->  
+    <delete id="deleteJob" parameterType="java.lang.String" >  
+        delete from [dbo].[OPERATION]  
+        where O_ID = #{jobKey}    
+    </delete>  
+      
+    <!-- 添加分部 -->
+      <insert id="insertJob" parameterType="com.org.cygs.pojo.Job">  
+        insert into [dbo].[OPERATION]
+        <trim prefix="(" suffix=")" suffixOverrides="," >    
+          <if test="jobKey != null" >    
+            O_ID,    
+          </if>    
+          <if test="jobName != null" >    
+            O_NAME,    
+          </if> 
+          <if test="jobId != null" >    
+            O_CODE,    
+          </if>
+          <if test="unId != null" >    
+            UN_ID,    
+          </if>
+          <if test="psId != null" >    
+            PS_ID,    
+          </if>   
+          <if test="remark != null" >    
+            remark,    
+          </if>        
+        </trim>    
+        <trim prefix="values (" suffix=")" suffixOverrides="," >    
+           <if test="jobKey != null" >    
+           #{jobKey},    
+          </if>    
+          <if test="jobName != null" >    
+            #{jobName},    
+          </if> 
+          <if test="jobId != null" >    
+            #{jobId},    
+          </if>
+          <if test="unId != null" >    
+            #{unId},    
+          </if>
+          <if test="psId != null" >    
+            #{psId},    
+          </if>   
+          <if test="remark != null" >    
+            #{remark},    
+          </if>     
+        </trim>     
+    </insert> 
+    
+  
+    <!-- 更新分部信息 -->  
+    <update id="updateJob" parameterType="com.org.cygs.pojo.Job" >    
+        update [dbo].[OPERATION]    
+        <set >    
+          <if test="jobName != null" >    
+            [O_NAME]=#{jobName},    
+          </if> 
+          <if test="jobId != null" >    
+            [O_CODE]=#{jobId},    
+          </if>
+          <if test="unId != null" >    
+            [UN_ID]=#{unId},    
+          </if>
+          <if test="psId != null" >    
+            [PS_ID]=#{psId},    
+          </if>   
+          <if test="remark != null" >    
+            [REMARK]=#{remark},    
+          </if>     
+        </set>    
+        where [O_ID] = #{jobKey}   
+    </update>    
+    
+    
+        <!-- 查询工作项目列表-->  
+    <select id="getJobList" parameterType="java.util.Map" resultMap="BaseResultMap">  
+        select  *  
+        from <include refid="Table_List"></include> 
+        <where>
+       <include refid="CheckOption_List"></include>  
+         <if test="jobName !=null and jobName !=''">
+		     and a.[O_NAME]=#{jobName}
+		  </if>
+		  <if test="jobKey !=null and jobKey !=''">
+		     and a.[O_ID]=#{jobKey}
+		  </if>
+		   <if test="unId !=null and unId !=''">
+		     and c.[UN_ID]=#{unId}
+		  </if>
+		  <if test="psName !=null and psName !=''">
+		     and b.[PS_NAME]=#{psName}
+		  </if>
+		
+		</where>
+        order by [O_CODE] asc 
+        Offset #{offset} Row Fetch Next #{pageSize} Rows Only 
+    </select>
+  
+       <!-- 得到工程部位数量-->  
+    <select id="getJobCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+         select   count(*)  
+        from <include refid="Table_List"></include> 
+        <where>
+       <include refid="CheckOption_List"></include>  
+         <if test="jobName !=null and jobName !=''">
+		     and a.[O_NAME]=#{jobName}
+		  </if>
+		  <if test="jobKey !=null and jobKey !=''">
+		     and a.[O_ID]=#{jobKey}
+		  </if>
+		   <if test="unId !=null and unId !=''">
+		     and c.[UN_ID]=#{unId}
+		  </if>
+		  <if test="psName !=null and psName !=''">
+		     and b.[PS_NAME]=#{psName}
+		  </if>
+		
+		</where>
+    </select>
+      
+      
+      
+   <!-- 查询最新插入的主键 -->
+   <select id="getNewJobKey"  resultMap="BaseResultMap">
+  		select top 1 * from OPERATION
+  		order by O_ID desc
+  	</select>
+</mapper>  

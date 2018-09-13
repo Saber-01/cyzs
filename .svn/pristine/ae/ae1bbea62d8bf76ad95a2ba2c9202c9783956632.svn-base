@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.ProjectClassDao" >
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.ProjectClass" >
+    <id column="PC_ID" property="pcId" jdbcType="VARCHAR" />
+    <result column="PC_CODE" property="pcCode" jdbcType="CHAR" />
+    <result column="PC_NAME" property="pcName" jdbcType="VARCHAR" />
+    <result column="PC_REMARK" property="pcRemark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+      PC_ID, PC_CODE, PC_NAME, PC_REMARK
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    PC_ID,PC_CODE,PC_NAME,PC_REMARK
+    from PROJECT_CLASS
+    where PC_ID = #{pcId,jdbcType=VARCHAR}
+  </select>
+  
+</mapper>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.PermissionDao" >    
+        <resultMap id="BaseResultMap" type="com.org.cygs.pojo.Permission">
+        
+        <result column="PER_ID" property="perId" jdbcType="VARCHAR" /> 
+        <result column="PERMISSION_ID" property="permissionId" jdbcType="VARCHAR" />
+        <result column="PG_ID" property="pgId" jdbcType="VARCHAR" />
+        <result column="PAGE_ADDRESS" property="pageAddress" jdbcType="VARCHAR" />
+        <result column="PERMISSION_REMARK" property="permissionRemark" jdbcType="VARCHAR" />
+        <result column="PERMISSION_NAME" property="permissionName" jdbcType="VARCHAR" /> 
+        <result column="PERMISSION_GROUP_ID" property="permissionGroupId" jdbcType="VARCHAR" /> 
+        <result column="PERMISSION_GROUP_NAME" property="permissionGroupName" jdbcType="VARCHAR" />
+    </resultMap>  
+  
+    <sql id="Base_Column_List">  
+        p.[PER_ID], p.[PERMISSION_ID], p.[PG_ID], p.[PERMISSION_NAME], p.[PAGE_ADDRESS],p.[PERMISSION_REMARK],pg.PERMISSION_GROUP_ID,pg.PERMISSION_GROUP_NAME  
+    </sql>  
+ 
+    <!-- 获取所有权限列表-->  
+    <select id="getAllPermission" resultMap="BaseResultMap">  
+        select  
+        <include refid="Base_Column_List" />  
+        from [dbo].[PERMISSION] p,[dbo].[PERMISSION_GROUP] pg
+        where p.[PG_ID] = pg.[PG_ID]
+        order by p.[PERMISSION_ID] asc 
+    </select>  
+    
+     <!-- 获得相关权限组下最大权限编号 -->
+    <select id="getMaxPermissIdByPgId" parameterType="java.lang.String" resultType="java.lang.String">  
+        select MAX(PERMISSION_ID) 
+        from [dbo].[PERMISSION]
+        where PG_ID = #{pgId}
+    </select>
+    
+   
+    <select id="getPerIdByPerName" parameterType="java.lang.String" resultType="java.lang.String">  
+        select PER_ID 
+        from [dbo].[PERMISSION]
+        where PERMISSION_NAME = #{permissionName}
+    </select>
+    
+      
+    <!-- 根据条件筛选权限列表-->  
+    <select id="getPermission" parameterType="com.org.cygs.pojo.Permission" resultMap="BaseResultMap">  
+        select  
+        <include refid="Base_Column_List" />  
+        from [dbo].[PERMISSION] p,[dbo].[PERMISSION_GROUP] pg
+        
+        <where>
+            p.[PG_ID] = pg.[PG_ID]
+         <if test="permissionGroupId !=null and permissionGroupId !=''">
+		     and PERMISSION_GROUP_ID=#{permissionGroupId}
+		  </if>
+		  <if test="permissionId !=null and permissionId !=''">
+		     and PERMISSION_ID=#{permissionId}
+		  </if>
+		  <if test="permissionName !=null and permissionName !=''">
+		     and PERMISSION_NAME=#{permissionName}
+		  </if>
+
+		</where>
+        order by p.[PERMISSION_ID] asc 
+    </select>  
+    
+    
+    <!-- 根据条件筛选权限列表-->  
+    <select id="getPermissionList" parameterType="java.util.Map" resultMap="BaseResultMap">  
+        select  
+        <include refid="Base_Column_List" />  
+        from [dbo].[PERMISSION] p,[dbo].[PERMISSION_GROUP] pg     
+        <where>
+            p.[PG_ID] = pg.[PG_ID]
+         <if test="permissionGroupId !=null and permissionGroupId !=''">
+		     and PERMISSION_GROUP_ID=#{permissionGroupId}
+		  </if>
+		  <if test="permissionId !=null and permissionId !=''">
+		     and PERMISSION_ID=#{permissionId}
+		  </if>
+		  <if test="permissionName !=null and permissionName !=''">
+		     and PERMISSION_NAME=#{permissionName}
+		  </if>
+		</where>
+        order by p.[PERMISSION_ID] asc
+        Offset #{offset} Row Fetch Next #{pageSize} Rows Only 
+    </select>  
+    
+    
+    <!-- 根据条件筛选权限列表-->  
+    <select id="getPermissionCount" parameterType="java.util.Map" resultType="java.lang.Integer">  
+        select count(*)
+        from [dbo].[PERMISSION] p,[dbo].[PERMISSION_GROUP] pg     
+        <where>
+            p.[PG_ID] = pg.[PG_ID]
+         <if test="permissionGroupId !=null and permissionGroupId !=''">
+		     and PERMISSION_GROUP_ID=#{permissionGroupId}
+		  </if>
+		  <if test="permissionId !=null and permissionId !=''">
+		     and PERMISSION_ID=#{permissionId}
+		  </if>
+		  <if test="permissionName !=null and permissionName !=''">
+		     and PERMISSION_NAME=#{permissionName}
+		  </if>
+		</where>
+    </select>  
+    
+  <!-- 获取选定权限信息-->  
+    <select id="getPermissionById" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select
+        <include refid="Base_Column_List" />  
+        from [dbo].[PERMISSION] p,[dbo].[PERMISSION_GROUP] pg
+        where p.[PG_ID] = pg.[PG_ID] and p.[PER_ID] = #{perId,jdbcType=VARCHAR}
+    </select>
+    
+    
+    <!-- 删除权限 -->  
+    <delete id="deletePermission" parameterType="java.lang.String">  
+        delete from [dbo].[PERMISSION]  
+        where [PER_ID] = #{perId,jdbcType=VARCHAR}    
+    </delete>  
+    
+    
+    <!-- 更新权限信息 -->
+    <update id="updatePermission" parameterType="com.org.cygs.pojo.Permission" >    
+        update [dbo].[PERMISSION]    
+        <set >    
+          <if test="pgId != null" >    
+            PG_ID = #{pgId,jdbcType=VARCHAR},    
+          </if>    
+          <if test="permissionId != null" >    
+            PERMISSION_ID = #{permissionId,jdbcType=VARCHAR},    
+          </if>    
+          <if test="permissionName != null" >    
+            PERMISSION_NAME = #{permissionName,jdbcType=VARCHAR},    
+          </if> 
+          <if test="pageAddress != null">
+			PAGE_ADDRESS = #{pageAddress,jdbcType=VARCHAR},
+			</if>  
+          <if test="permissionRemark != null" >    
+            PERMISSION_REMARK = #{permissionRemark,jdbcType=VARCHAR},    
+          </if>
+           
+        </set>    
+        where [PER_ID] = #{perId,jdbcType=VARCHAR}   
+    </update>
+    
+    
+    
+    
+    <!-- 添加权限 --> 
+	<insert id="addPermission" parameterType="com.org.cygs.pojo.Permission">
+		insert into [dbo].[PERMISSION] 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="permissionId != null">
+				[PERMISSION_ID],
+			</if>
+			<if test="pgId != null">
+				PG_ID,
+			</if>
+			<if test="permissionName != null">
+				[PERMISSION_NAME],
+			</if>
+
+			<if test="pageAddress != null">
+				[PAGE_ADDRESS],
+			</if>
+			<if test="permissionRemark != null">
+				[PERMISSION_REMARK],
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="permissionId != null">
+				#{permissionId,jdbcType=VARCHAR},
+			</if>
+			<if test="pgId != null">
+				#{pgId,jdbcType=VARCHAR},
+			</if>
+			<if test="permissionName != null">
+				#{permissionName,jdbcType=VARCHAR},
+			</if>
+			<if test="pageAddress != null">
+				#{pageAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="permissionRemark != null">
+				#{permissionRemark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+    
+    
+    
+    
+</mapper>

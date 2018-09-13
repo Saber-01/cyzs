@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.AuditInfoDao" >
+  <resultMap id="AuditInfoMap" type="com.org.cygs.pojo.AuditInfo" >
+    <id column="A_ID" property="aId" jdbcType="VARCHAR" />
+    <result column="U_ID" property="uId" jdbcType="VARCHAR" />
+     <result column="RO_ID" property="roId" jdbcType="VARCHAR" />
+    <result column="M_ID" property="mId" jdbcType="VARCHAR" />
+    <result column="AUDIT_RESULT" property="auditResult" jdbcType="INTEGER" />
+    <result column="AUDIT_COMMENT" property="auditComment" jdbcType="VARCHAR" />
+    <result column="AUDIT_PERSONAL" property="auditPersonal" jdbcType="VARCHAR" />
+    <result column="AUDIT_TIME" property="auditTime" jdbcType="TIMESTAMP" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" /> 
+    <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+    <result column="M_CODE" property="mCode" jdbcType="VARCHAR" />
+    <result column="MT_NAME" property="mtName" jdbcType="VARCHAR" />
+    <result column="PR_NAME" property="prName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+      A_ID, U_ID, M_ID, AUDIT_RESULT, AUDIT_COMMENT, AUDIT_TIME, AUDIT_PERSONAL, ROLE_NAME
+  </sql>
+  
+  
+   <sql id="Column_List">
+       a.A_ID,a.M_ID,a.AUDIT_RESULT,a.AUDIT_TIME,ut.USER_NAME,r.ROLE_NAME,m.M_CODE,pr.PR_NAME,mt.MT_NAME
+    </sql>
+    
+  <sql id="Table_List">  
+      [dbo].[AUDIT_INFO] a,[dbo].[USER_TABLE] ut,[dbo].[MISSION] m,[dbo].[PROJECT] pr,[dbo].[MISSION_TYPE] mt,[dbo].[ROLE] r
+  </sql>
+  
+  <sql id="Condition_List">
+        a.U_ID = ut.U_ID and a.RO_ID = r.RO_ID and a.M_ID = m.M_ID and m.PR_ID = pr.PR_ID and m.MT_ID = mt.MT_ID
+   </sql>
+  
+  
+  <update id="updateAuditComment" parameterType="com.org.cygs.pojo.AuditInfo" >
+    update AUDIT_INFO
+    <set >
+      <if test="auditComment != null" >
+        AUDIT_COMMENT = #{auditComment,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where A_ID = #{aId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectByPrimaryKey" resultMap="AuditInfoMap" parameterType="java.lang.String" >
+    select * from AUDIT_INFO
+    where A_ID = #{aId,jdbcType=VARCHAR}
+  </select>
+  
+  
+  <select id="getAuditInfoByAId" resultMap="AuditInfoMap" parameterType="java.lang.String" >
+    select A_ID, AUDIT_COMMENT from AUDIT_INFO
+    where A_ID = #{aId,jdbcType=VARCHAR}
+  </select>
+
+  
+  <select id="getAuditInfoByMId" resultMap="AuditInfoMap" parameterType="java.lang.String" >
+    select a.*, u.USER_NAME, r.ROLE_NAME
+    from AUDIT_INFO a, USER_TABLE u, ROLE r
+    where a.U_ID=u.U_ID and a.RO_ID = r.RO_ID and a.M_ID = #{mId,jdbcType=VARCHAR} order by AUDIT_TIME asc
+  </select>
+  
+  <select id="getDAuditInfoByMId" resultMap="AuditInfoMap" parameterType="java.lang.String" >
+    select a.A_ID,a.U_ID,a.RO_ID,a.M_ID,a.AUDIT_RESULT,a.AUDIT_COMMENT,a.AUDIT_TIME
+    from AUDIT_INFO_DELETE a
+    where a.M_ID = #{mId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getDAuditByMId" resultMap="AuditInfoMap" parameterType="java.lang.String" >
+    select a.AUDIT_COMMENT,a.AUDIT_TIME,ur.USER_NAME, ur.ROLE_NAME
+    from AUDIT_INFO_DELETE a, UserAndRole ur
+    where a.U_ID=ur.U_ID and a.M_ID = #{mId,jdbcType=VARCHAR} order by a.AUDIT_TIME desc
+  </select>
+  
+  
+  <select id="delAuditInfoByMId" parameterType="java.lang.String" >
+    delete from AUDIT_INFO
+    where M_ID = #{mId,jdbcType=VARCHAR}
+  </select>
+  
+  
+  <insert id="insertAuditInfo" parameterType="com.org.cygs.pojo.AuditInfo" >
+    insert into AUDIT_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="aId != null" >
+        A_ID,
+      </if>
+      <if test="uId != null" >
+        U_ID,
+      </if>
+      <if test="roId != null" >
+        RO_ID,
+      </if>
+      <if test="mId != null" >
+        M_ID,
+      </if>
+      <if test="auditResult != null" >
+        AUDIT_RESULT,
+      </if>
+      <if test="auditComment != null" >
+        AUDIT_COMMENT,
+      </if>
+      <if test="auditTime != null" >
+        AUDIT_TIME,
+      </if>
+      <if test="auditPersonal != null" >
+        AUDIT_PERSONAL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="aId != null" >
+        #{aId,jdbcType=VARCHAR},
+      </if>
+      <if test="uId != null" >
+        #{uId,jdbcType=VARCHAR},
+      </if>
+      <if test="roId != null" >
+        #{roId,jdbcType=VARCHAR},
+      </if>
+      <if test="mId != null" >
+        #{mId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditResult != null" >
+        #{auditResult,jdbcType=INTEGER},
+      </if>
+      <if test="auditComment != null" >
+        #{auditComment,jdbcType=VARCHAR},
+      </if>
+      <if test="auditTime != null" >
+        #{auditTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="auditPersonal != null" >
+        #{auditPersonal,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.org.cygs.pojo.AuditInfo" >
+    update AUDIT_INFO
+    <set >
+      <if test="uId != null" >
+        U_ID = #{uId,jdbcType=VARCHAR},
+      </if>
+      <if test="mId != null" >
+        M_ID = #{mId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditResult != null" >
+        AUDIT_RESULT = #{auditResult,jdbcType=INTEGER},
+      </if>
+      <if test="auditComment != null" >
+        AUDIT_COMMENT = #{auditComment,jdbcType=VARCHAR},
+      </if>
+      <if test="auditTime != null" >
+        AUDIT_TIME = #{auditTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where A_ID = #{aId,jdbcType=VARCHAR}
+  </update>
+  
+  
+  
+    <!-- 查看任务书审核记录总记录数-->  
+    <select id="getAuditInfoCount" parameterType="java.util.Map" resultType="java.lang.Integer">  
+        select count(*)
+        from 
+        <include refid="Table_List" />
+        <where>
+        <include refid="Condition_List" />
+        <if test="mtId !=null and mtId !=''">
+		     and m.MT_ID =#{mtId}
+		</if>
+		<if test="mCode !=null and mCode !=''">
+		     and m.M_CODE =#{mCode}
+		</if>
+		
+		 
+		<if test="prId !=null and prId !=''">
+		     and pr.PR_ID =#{prId}
+		</if> <!-- 
+		<if test="userName !=null and userName !=''">
+		     and ut.USER_NAME =#{userName}
+		</if>-->
+	
+		<if test="roleName.equals('工长')">
+		     and m.SUPERVISOR = #{userName}
+		</if>
+		 
+		<if test="roleName.equals('劳资员')">
+		     and mt.MT_CODE = 9
+		</if>
+		
+		<if test="roleName.equals('预算负责人')">
+		     and mt.MT_CODE = 6
+		</if>
+		
+		<if test="roleName.equals('西诺亚劳务')">
+		     and c.CU_NAME = #{roleName}
+		</if>
+		<!--  
+		<if test="roleName.equals('财务')">
+		     and ((mt.MT_CODE = 1 and m.STATUS = 2) or (mt.MT_CODE = 3 and m.STATUS = 3) or (mt.MT_CODE = 4 and m.STATUS = 4) 
+		     or (mt.MT_CODE = 5 and m.STATUS = 4) or (mt.MT_CODE = 7 and m.STATUS = 3) or (mt.MT_CODE = 8 and m.STATUS = 3))
+		</if>-->
+		
+		<if test="projectList !=null and projectList.size() != 0">
+		    and pr.PR_ID in
+		   <foreach collection="projectList" item="Item" index="index"
+            open="(" close=")" separator=",">
+            #{Item.prId}
+           </foreach>
+		</if>
+		
+		</where>     
+    </select>
+    
+    
+    
+    <!-- 通过筛选条件查看任务书审核历史记录并分页-->  
+    <select id="getAuditInfoList" parameterType="java.util.Map" resultMap="AuditInfoMap">  
+        select
+        <include refid="Column_List" />
+        from
+        <include refid="Table_List" />
+        <where>
+         <include refid="Condition_List" />
+        <if test="mtId !=null and mtId !=''">
+		     and m.MT_ID =#{mtId}
+		</if>
+		<if test="mCode !=null and mCode !=''">
+		     and m.M_CODE =#{mCode}
+		</if>
+	
+	
+	    <if test="prId !=null and prId !=''">
+		     and pr.PR_ID =#{prId}
+		</if>
+		<!-- 
+		<if test="userName !=null and userName !=''">
+		     and ut.USER_NAME =#{userName}
+		</if> -->
+	
+		<if test="roleName.equals('工长')">
+		     and m.SUPERVISOR = #{userName}
+		</if>
+		 
+		<if test="roleName.equals('劳资员')">
+		     and mt.MT_CODE = 9
+		</if>
+		
+		<if test="roleName.equals('预算负责人')">
+		     and mt.MT_CODE = 6
+		</if>
+		
+		<if test="roleName.equals('西诺亚劳务')">
+		     and c.CU_NAME = #{roleName}
+		</if>
+		<!--  
+		<if test="roleName.equals('财务')">
+		     and ((mt.MT_CODE = 1 and m.STATUS = 2) or (mt.MT_CODE = 3 and m.STATUS = 3) or (mt.MT_CODE = 4 and m.STATUS = 4) 
+		     or (mt.MT_CODE = 5 and m.STATUS = 4) or (mt.MT_CODE = 7 and m.STATUS = 3) or (mt.MT_CODE = 8 and m.STATUS = 3))
+		</if>-->
+		
+		<if test="projectList !=null and projectList.size() != 0">
+		    and pr.PR_ID in
+		   <foreach collection="projectList" item="Item" index="index"
+            open="(" close=")" separator=",">
+            #{Item.prId}
+           </foreach>
+		</if>
+        </where>
+        order by m.M_CODE,a.AUDIT_TIME desc
+        Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+    
+    <!-- 根据比较auditTime来获取auditInfo条目 -->
+    <select id="getAuditInfoByAuditTime" resultMap="AuditInfoMap">
+    	select MAX(a.M_ID) as M_ID,MAX(a.AUDIT_TIME) as AUDIT_TIME
+    		from AUDIT_INFO a
+    		group by a.M_ID
+    		having MAX(a.AUDIT_TIME) > #{0,jdbcType=TIMESTAMP} and #{1,jdbcType=TIMESTAMP} > MAX(a.AUDIT_TIME)
+    </select>
+    
+    
+
+</mapper>

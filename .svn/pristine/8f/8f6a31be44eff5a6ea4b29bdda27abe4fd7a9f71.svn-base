@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.RoleDao" >    
+        <resultMap id="BaseResultMap" type="com.org.cygs.pojo.Role">        
+        <result column="RO_ID" property="roId" jdbcType="VARCHAR" />
+        <result column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+        <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+        <result column="ROLE_REMARK" property="roleRemark" jdbcType="VARCHAR" />
+        
+    </resultMap>
+    
+      
+  
+    <sql id="Base_Column_List">  
+       [RO_ID], [ROLE_ID],[ROLE_NAME],[ROLE_REMARK]  
+    </sql> 
+    
+    
+    
+    
+    <select id="getRoIdByRoleName" parameterType="java.lang.String" resultType="java.lang.String">  
+        select RO_ID
+        from [dbo].[ROLE]
+        where [ROLE_NAME] = #{roleName,jdbcType=VARCHAR}
+    </select>
+    
+    <select id="getMaxRoleId" resultType="java.lang.String">  
+        select MAX(ROLE_ID) 
+        from [dbo].[ROLE]
+    </select>
+    
+    <!-- 获取所有角色-->  
+    <select id="getAllRole" resultMap="BaseResultMap">  
+        select
+        <include refid="Base_Column_List" />  
+        from [dbo].[ROLE]
+        order by [ROLE_ID] asc
+    </select>
+    
+    <!-- 通过筛选条件动态选择-->  
+    <select id="getRole" parameterType="com.org.cygs.pojo.Role" resultMap="BaseResultMap">  
+        select
+        <include refid="Base_Column_List" />  
+        from [dbo].[ROLE]
+        <where>
+         <if test="roleId !=null and roleId !=''">
+		     and ROLE_ID=#{roleId}
+		  </if>
+		  <if test="roleName !=null and roleName !=''">
+		     and ROLE_NAME=#{roleName}
+		  </if>  
+		</where>
+        order by [ROLE_ID] asc
+    </select>
+    
+    
+    <!-- 通过筛选条件动态选择-->  
+    <select id="getRole1" parameterType="java.util.Map" resultMap="BaseResultMap">  
+        select
+        <include refid="Base_Column_List" />  
+        from [dbo].[ROLE]
+        <where>
+         <if test="roleId !=null and roleId !=''">
+		     and ROLE_ID=#{roleId}
+		  </if>
+		  <if test="roleName !=null and roleName !=''">
+		     and ROLE_NAME=#{roleName}
+		  </if>  
+		</where>
+        order by [ROLE_ID] asc
+        Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+    
+    
+    
+    
+    
+    
+    <!-- 通过筛选条件动态选择-->  
+    <select id="getCount" parameterType="com.org.cygs.pojo.Role" resultType="java.lang.Integer">  
+        select count(*)
+        from [dbo].[ROLE]
+        <where>
+         <if test="roleId !=null and roleId !=''">
+		     and ROLE_ID=#{roleId}
+		  </if>
+		  <if test="roleName !=null and roleName !=''">
+		     and ROLE_NAME=#{roleName}
+		  </if>  
+		</where> 
+    </select>
+    
+    
+     <!-- 通过筛选条件动态选择-->  
+    <select id="getRoleList" parameterType="java.util.Map" resultMap="BaseResultMap">  
+        select
+        <include refid="Base_Column_List" />  
+        from [dbo].[ROLE]
+        <where>
+         <if test="roleId !=null and roleId !=''">
+		     and ROLE_ID=#{roleId}
+		  </if>
+		  <if test="roleName !=null and roleName !=''">
+		     and ROLE_NAME=#{roleName}
+		  </if>  
+		</where>
+        order by [ROLE_ID] asc
+        Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+    
+    <!-- 通过筛选条件动态选择-->  
+    <select id="getRoleCount" parameterType="com.org.cygs.pojo.Role" resultType="java.lang.Integer">  
+        select count(*)
+        from [dbo].[ROLE]
+        <where>
+         <if test="roleId !=null and roleId !=''">
+		     and ROLE_ID=#{roleId}
+		  </if>
+		  <if test="roleName !=null and roleName !=''">
+		     and ROLE_NAME=#{roleName}
+		  </if>  
+		</where> 
+    </select>
+    
+    
+
+     <!-- 获取用户已有角色角色信息-->  
+    <select id="getRoleByUId" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select
+        a.[RO_ID], a.[ROLE_NAME] 
+        from [dbo].[ROLE] a,[dbo].[USER_ROLE] b
+        where a.[RO_ID] = b.[RO_ID] and b.[U_ID] = #{uId,jdbcType=VARCHAR}
+    </select>
+    
+    
+    <!-- 获取用户没有的角色信息-->  
+    <select id="getUserNotHasRole" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select
+        [RO_ID], [ROLE_NAME] 
+        from [dbo].[ROLE]
+        where [RO_ID] not in (select RO_ID from [dbo].[USER_ROLE] where U_ID = #{uId,jdbcType=VARCHAR}) 
+    </select>
+    
+    
+    
+    <!-- 获取选定角色信息-->  
+    <select id="getRoleById" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select
+        <include refid="Base_Column_List" />  
+        from [dbo].[ROLE]
+        where [RO_ID] = #{roId,jdbcType=VARCHAR}
+    </select>
+    
+    
+    <!-- 删除角色 -->  
+    <delete id="deleteRole" parameterType="java.lang.String">  
+        delete from [dbo].[ROLE]  
+        where [RO_ID] = #{roId,jdbcType=VARCHAR}    
+    </delete>  
+    
+    
+    <!-- 更新角色信息 -->
+    <update id="updateRole" parameterType="com.org.cygs.pojo.Role" >    
+        update [dbo].[ROLE]    
+        <set >    
+          <if test="roleId != null" >    
+            ROLE_ID = #{roleId,jdbcType=VARCHAR},    
+          </if>    
+          <if test="roleName != null" >    
+            ROLE_NAME = #{roleName,jdbcType=VARCHAR},    
+          </if>    
+          <if test="roleRemark != null" >    
+            ROLE_REMARK = #{roleRemark,jdbcType=VARCHAR},    
+          </if>    
+        </set>    
+        where [RO_ID] = #{roId,jdbcType=INTEGER}   
+    </update>
+    
+    
+    
+    
+    <!-- 增加角色 --> 
+	<insert id="addRole" parameterType="com.org.cygs.pojo.Role">
+		insert into [dbo].[ROLE] 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="roleId != null">
+				ROLE_ID,
+			</if>
+			<if test="roleName != null">
+				ROLE_NAME,
+			</if>
+			<if test="roleRemark != null">
+				ROLE_REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="roleId != null">
+				#{roleId,jdbcType=VARCHAR},
+			</if>
+			<if test="roleName != null">
+				#{roleName,jdbcType=VARCHAR},
+			</if>
+			<if test="roleRemark != null">
+				#{roleRemark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+    
+    
+    
+  </mapper>

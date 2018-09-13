@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.MissionDeleteDao" >
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.MissionDelete" >
+    <id column="MD_ID" property="mdId" jdbcType="VARCHAR" />
+    
+    <association property="mission" column="mission" javaType="com.org.cygs.pojo.Mission"></association>
+  </resultMap>
+  
+  <!-- 查询id最大的任务书 -->  
+  <select id="getMdIdByMax" resultType="java.lang.String">  
+        select top 1 MD_ID from MISSION_DELETE order by MD_ID desc
+  </select>
+  
+  <!-- 获取mCode -->  
+  <select id="getMdMCode" parameterType="java.lang.String" resultType="java.lang.String">  
+        select MD_ID from MISSION_DELETE where M_CODE=#{0}
+  </select>
+  
+  
+  <insert id="insertMissionDelete" parameterType="com.org.cygs.pojo.MissionDelete" >
+    insert into MISSION_DELETE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="mdId != null" >
+        MD_ID,
+      </if>
+      <if test="mission.mId != null" >
+        M_ID,
+      </if>
+      <if test="mission.prId != null" >
+        PR_ID,
+      </if>
+      <if test="mission.beginDate != null" >
+        BEGIN_DATE,
+      </if>
+      <if test="mission.endDate != null" >
+        END_DATE,
+      </if>
+      <if test="mission.mCode != null" >
+        M_CODE,
+      </if>
+      <if test="mission.cuId != null" >
+        CU_ID,
+      </if>
+      <if test="mission.submitTime != null" >
+        SUBMIT_TIME,
+      </if>
+      <if test="mission.status != null" >
+        STATUS,
+      </if>
+      <if test="mission.remark != null" >
+        REMARK,
+      </if>
+      <if test="mission.mtId != null" >
+        MT_ID,
+      </if>
+      <if test="mission.edtionId != null" >
+        EDTION_ID,
+      </if>
+      <if test="mission.recorderId != null" >
+        RECORDER_ID,
+      </if>
+      <if test="mission.pId != null" >
+        P_ID,
+      </if>
+      <if test="mission.pcPId != null" >
+        PC_P_ID,
+      </if>
+      <if test="mission.remark1 != null" >
+        REMARK1,
+      </if>
+      <if test="mission.remark2 != null" >
+        REMARK2,
+      </if>
+      <if test="mission.isoverdue != null" >
+        ISOVERDUE,
+      </if>
+      <if test="mission.supervisor != null" >
+        SUPERVISOR,
+      </if>
+      <if test="mission.lastAuditTime != null" >
+        LAST_AUDIT_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="mdId != null" >
+        #{mdId,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.mId != null" >
+        #{mission.mId,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.prId != null" >
+        #{mission.prId,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.beginDate != null" >
+        #{mission.beginDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mission.endDate != null" >
+        #{mission.endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mission.mCode != null" >
+        #{mission.mCode,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.cuId != null" >
+        #{mission.cuId,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.submitTime != null" >
+        #{mission.submitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mission.status != null" >
+        #{mission.status,jdbcType=INTEGER},
+      </if>
+      <if test="mission.remark != null" >
+        #{mission.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.mtId != null" >
+        #{mission.mtId,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.edtionId != null" >
+        #{mission.edtionId,jdbcType=INTEGER},
+      </if>
+      <if test="mission.recorderId != null" >
+        #{mission.recorderId,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.pId != null" >
+        #{mission.pId,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.pcPId != null" >
+        #{mission.pcPId,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.remark1 != null" >
+        #{mission.remark1,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.remark2 != null" >
+        #{mission.remark2,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.isoverdue != null" >
+        #{mission.isoverdue,jdbcType=INTEGER},
+      </if>
+      <if test="mission.supervisor != null" >
+        #{mission.supervisor,jdbcType=VARCHAR},
+      </if>
+      <if test="mission.lastAuditTime != null" >
+        #{mission.lastAuditTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  
+</mapper>

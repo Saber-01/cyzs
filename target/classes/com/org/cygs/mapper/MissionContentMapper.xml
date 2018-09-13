@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.org.cygs.dao.MissionContentDao">
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.MissionContent">
+    <id column="MC_ID" property="mcId" jdbcType="VARCHAR" />
+    <result column="MC_CODE" property="mcCode" jdbcType="INTEGER" />
+    <result column="PRICE" property="price" jdbcType="DECIMAL" />
+    <result column="REAL_QUANTITY" property="realQuantity" jdbcType="DECIMAL" />
+    <result column="WAGE_SUM" property="wageSum" jdbcType="DECIMAL" />
+    <result column="ACCUMULATE_SUM" property="accumulateSum" jdbcType="DECIMAL" />
+    <result column="FLOOR" property="floor" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="M_ID" property="mId" jdbcType="VARCHAR" />
+    <result column="PART_POS" property="partPos" jdbcType="VARCHAR" />
+    <result column="PART_ITEMONE" property="partItemone" jdbcType="VARCHAR" />
+    <result column="PART_ITEMTWO" property="partItemtwo" jdbcType="VARCHAR" />
+    <result column="PART_ITEMTHREE" property="partItemthree" jdbcType="VARCHAR" />
+    <result column="ISRETURN" property="isreturn" jdbcType="VARCHAR" />
+    <result column="INNER_ID" property="innerId" jdbcType="VARCHAR" />
+    <result column="O_ID" property="oId" jdbcType="VARCHAR" />
+    <result column="PS_ID" property="psId" jdbcType="VARCHAR" />
+    <result column="UN_ID" property="unId" jdbcType="VARCHAR" />
+    <result column="P_ID" property="pId" jdbcType="VARCHAR" />
+	<result column="O_NAME" property="oName" jdbcType="VARCHAR" />
+	<result column="PS_NAME" property="psName" jdbcType="VARCHAR" />
+	<result column="UN_NAME" property="unName" jdbcType="VARCHAR" />
+	<result column="P_NAME" property="pName" jdbcType="VARCHAR" />
+
+  </resultMap>
+  
+  <sql id="Column_List">
+   mc.MC_ID,mc.MC_CODE,mc.PRICE,mc.REAL_QUANTITY,mc.WAGE_SUM,mc.ACCUMULATE_SUM,mc.ISRETURN,
+   mc.FLOOR,mc.REMARK,p.P_NAME,o.O_NAME,ps.PS_NAME,u.UN_NAME,mc.PS_ID,mc.P_ID,mc.O_ID,mc.UN_ID
+   </sql>
+   
+   <sql id="Column_List1">
+   mc.MC_ID,mc.MC_CODE,mc.PRICE,mc.REAL_QUANTITY,mc.WAGE_SUM,mc.ACCUMULATE_SUM,
+   mc.REMARK,mc.P_ID,p.P_NAME,mc.O_ID,o.O_NAME,mc.PS_ID,ps.PS_NAME
+   </sql>
+
+  <sql id="Table_List">  
+      [dbo].[MISSION_CONTENT] mc,[dbo].[PART] p,[dbo].[PART_POSITION] ps,[dbo].[UNIT] u,[dbo].[OPERATION] o
+  </sql>
+  
+  <sql id="Table_List1">  
+      MISSION_CONTENT mc, PROJECT p, MISSION m, CHECK_UNIT cu, PR_INDEX_PC prpc, MISSION_TYPE mt
+  </sql>
+  
+  <sql id="Table_List2">  
+	MISSION_CONTENT mc, MISSION m, PROJECT p, PART pa, PART_POSITION pp, OPERATION o,
+	PR_INDEX_PC prpc, CHECK_UNIT cu, MISSION_TYPE mt, UNIT u
+  </sql>
+  
+  <sql id="Table_List3">  
+      [dbo].[MISSION_CONTENT] mc,[dbo].[PART] p,[dbo].[PART_POSITION] ps,[dbo].[OPERATION] o
+  </sql>
+
+  <sql id="Condition_List">
+        mc.PS_ID = ps.PS_ID and mc.P_ID = p.P_ID and mc.O_ID = o.O_ID and mc.UN_ID = u.UN_ID
+  </sql>
+  
+  <sql id="Condition_List1">
+       p.PR_ID=m.PR_ID and m.M_ID=mc.M_ID and m.CU_ID=cu.CU_ID and 
+       prpc.PR_ID=p.PR_ID and m.PC_P_ID=prpc.PC_P_ID and m.MT_ID=mt.MT_ID
+  </sql>
+  
+  <sql id="Condition_List2">
+	p.PR_ID=m.PR_ID and m.M_ID=mc.M_ID and m.CU_ID=cu.CU_ID <!-- and pa.PR_ID=p.PR_ID -->
+	and mc.P_ID=pa.P_ID and prpc.PR_ID=p.PR_ID and m.PC_P_ID=prpc.PC_P_ID and m.MT_ID=mt.MT_ID 
+	and m.STATUS=100 and u.UN_ID=mc.UN_ID and mc.PS_ID=pp.PS_ID and mc.O_ID=o.O_ID and pp.P_ID=pa.P_ID
+  </sql>
+  <sql id="Condition_List3">
+        mc.PS_ID = ps.PS_ID and mc.P_ID = p.P_ID and mc.O_ID = o.O_ID
+  </sql>
+    
+    <!-- 查询某工程任务书中所有的内编号 -->
+    <select id="getInnerIdByPrId" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select distinct mc.INNER_ID from MISSION m, MISSION_CONTENT mc, PROJECT p
+		where m.PR_ID=p.PR_ID and m.M_ID=mc.M_ID and mc.INNER_ID != ''
+		and m.PR_ID=#{0}
+    </select>
+    
+    <!-- 查询某工程任务书中所有的内编号数量 -->
+    <select id="getInnerIdCount" parameterType="java.lang.String" resultType="java.lang.Integer">  
+        select distinct count(mc.INNER_ID) from MISSION m, MISSION_CONTENT mc, PROJECT p
+		where m.PR_ID=p.PR_ID and m.M_ID=mc.M_ID and mc.INNER_ID != ''
+		and m.PR_ID=#{0}
+    </select>
+    
+    
+    <!-- 查询任务书id对应任务书详细信息 -->  
+    <select id="getMissionContentByMId" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select
+        <include refid="Column_List" />,INNER_ID
+        from 
+       <include refid="Table_List" />
+       <where>
+        <include refid="Condition_List" />
+        and mc.M_ID = #{mId}
+	  </where>
+	  order by mc.MC_CODE
+    </select>
+    
+    <!-- 查询合同内其他任务书id对应任务书详细信息 -->  
+    <select id="getHTNQTMissionContentByMId" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select
+        mc.MC_ID,mc.MC_CODE,mc.PRICE,mc.REAL_QUANTITY,mc.WAGE_SUM,mc.ACCUMULATE_SUM,mc.ISRETURN,
+   		mc.FLOOR,mc.REMARK,p.P_NAME,o.O_NAME,ps.PS_NAME,mc.PS_ID,mc.P_ID,mc.O_ID,mc.UN_ID
+        from 
+       [dbo].[MISSION_CONTENT] mc,[dbo].[PART] p,[dbo].[PART_POSITION] ps,[dbo].[OPERATION] o
+       <where>
+        mc.PS_ID = ps.PS_ID and mc.P_ID = p.P_ID and mc.O_ID = o.O_ID
+        and mc.M_ID = #{mId}
+	  </where>
+	  order by mc.MC_CODE
+    </select>
+    
+    <!-- 查询已删除任务书id对应任务书详细信息 -->  
+    <select id="getDMissionContentByMId" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select
+        <include refid="Column_List" />
+        from 
+       [dbo].[MISSION_DELETE_CONTENT] mc,[dbo].[PART] p,[dbo].[PART_POSITION] ps,[dbo].[UNIT] u,[dbo].[OPERATION] o
+       <where>
+        <include refid="Condition_List" />
+        and mc.M_ID = #{mId}
+	  </where>
+	  order by mc.MC_CODE
+    </select>
+    
+    <!-- 查询合同内其他任务书id对应任务书详细信息 -->  
+    <select id="getDelHTNQTMissionContentByMId" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select
+        mc.MC_ID,mc.MC_CODE,mc.PRICE,mc.REAL_QUANTITY,mc.WAGE_SUM,mc.ACCUMULATE_SUM,mc.ISRETURN,
+   		mc.FLOOR,mc.REMARK,p.P_NAME,o.O_NAME,ps.PS_NAME,mc.PS_ID,mc.P_ID,mc.O_ID,mc.UN_ID,ISRETURN
+        from 
+       [dbo].[MISSION_DELETE_CONTENT] mc,[dbo].[PART] p,[dbo].[PART_POSITION] ps,[dbo].[OPERATION] o
+       <where>
+        mc.PS_ID = ps.PS_ID and mc.P_ID = p.P_ID and mc.O_ID = o.O_ID
+        and mc.M_ID = #{mId}
+	  </where>
+	  order by mc.MC_CODE
+    </select>
+    
+    
+    <!-- 查询任务书id对应任务书详细信息 -->  
+    <select id="getDMissionContentInfoByMId" parameterType="java.lang.String" resultMap="BaseResultMap">  
+       select
+       [MC_ID],[MC_CODE],[PRICE],[REAL_QUANTITY],[WAGE_SUM],[ACCUMULATE_SUM],[FLOOR],[O_ID],[UN_ID],[REMARK],[M_ID],[MC_SERIAL],[PS_ID],
+       [P_ID],[PART_POS],[PART_ITEMONE],[PART_ITEMTWO],[PART_ITEMTHREE],[ISRETURN]
+       from 
+       [dbo].[MISSION_DELETE_CONTENT] mc
+       where mc.M_ID = #{mId}
+	   order by mc.MC_CODE
+    </select>
+    
+    
+    <!-- 合同内其他任务书    没有 单位信息 -->  
+    <select id="getMCByMId" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select
+        <include refid="Column_List1" />
+        from 
+       <include refid="Table_List3" />
+       <where>
+        <include refid="Condition_List3" />
+        and mc.M_ID = #{mId}
+	  </where>
+	  order by mc.MC_CODE
+    </select>
+    
+    
+    <!-- 删除任务书内容 -->
+	<select id="delMissionContentBymId" parameterType="java.lang.String"> 
+		delete
+		from [dbo].[MISSION_CONTENT]
+		where
+		M_ID = #{mId}      
+    </select>
+    
+    <!-- 删除   已删除任务书内容            恢复时用到-->
+	<select id="delDMissionContentBymId" parameterType="java.lang.String"> 
+		delete
+		from [dbo].[MISSION_DELETE_CONTENT]
+		where
+		M_ID = #{mId}      
+    </select>
+    
+    
+<!-- 查询任务书id对应任务书详细信息 -->  
+    <select id="getMissionContentInfoByMId" parameterType="java.lang.String" resultMap="BaseResultMap">  
+       select
+   MC_ID,MC_CODE,PRICE,REAL_QUANTITY,WAGE_SUM,ACCUMULATE_SUM,FLOOR,O_ID,UN_ID,REMARK,M_ID,MC_SERIAL,PS_ID,P_ID,PART_POS,ISRETURN,INNER_ID
+        from 
+     [dbo].[MISSION_CONTENT]
+      where M_ID = #{mId}
+	  order by MC_CODE
+    </select>
+
+	<!-- 查询已开工程量 -->
+  <select id="selectRealQuantity" resultType="java.lang.Float" parameterType="java.lang.String" >
+    select sum(mc.REAL_QUANTITY)
+    from 
+    <include refid="Table_List1" />
+	where 
+	<include refid="Condition_List1" /> and 
+	p.PR_ID=#{0} and cu.CU_ID=#{1} and prpc.PC_P_ID=#{2} and mt.MT_CODE=1
+  </select>
+
+ <!-- 预算查询已开始工程量 -->
+  <select id="selectYKRealQuantity" resultType="java.lang.Float" parameterType="java.lang.String" >
+    select sum(mc.REAL_QUANTITY) from MISSION_CONTENT mc,  MISSION m, MISSION_TYPE mt  
+	where  m.M_ID=mc.M_ID and m.MT_ID=mt.MT_ID and mt.MT_CODE=1 and
+	m.CU_ID=#{0} and m.PC_P_ID=#{1} and mc.O_ID=#{2}
+    and m.STATUS>0
+  </select>
+
+  <!-- 查询已结工程量 -->
+ <!--  <select id="queryaccQuantity" resultType="java.lang.Float" parameterType="java.lang.String" >
+    select sum(mc.REAL_QUANTITY) 
+	from <include refid="Table_List2" />
+	where <include refid="Condition_List2" /> and
+	p.PR_ID=#{0}
+	and pa.P_ID=#{1}
+	and mc.PS_ID=#{2}
+	and mc.O_ID=#{3}
+	and prpc.PC_P_ID=#{4}
+	and cu.CU_ID=#{5}
+	and m.MT_ID=#{6}
+	and u.UN_ID=#{7}
+  </select> -->
+  <select id="queryaccQuantity" resultType="java.lang.Float" parameterType="java.util.Map" >
+    select sum(mc.REAL_QUANTITY) 
+	from <include refid="Table_List2" />
+	where <include refid="Condition_List2" />
+	<if test="prId != null and prId != ''">
+		     and p.PR_ID=#{prId}
+	</if>
+	<if test="pId != null and pId != ''">
+		     and pa.P_ID=#{pId}
+	</if>
+	<if test="psId != null and psId != ''">
+		     and mc.PS_ID=#{psId}
+	</if>
+	<if test="oId != null and oId != ''">
+		     and mc.O_ID=#{oId}
+	</if>
+	<if test="pcPId != null and pcPId != ''">
+		     and prpc.PC_P_ID=#{pcPId}
+	</if>
+	<if test="cuId != null and cuId !=''">
+		     and cu.CU_ID=#{cuId}
+	</if>
+	<if test="mtId != null and mtId !=''">
+		     and m.MT_ID=#{mtId}
+	</if>
+	<if test="unId != null and unId !=''">
+		     and u.UN_ID=#{unId}
+	</if>
+  </select>
+  
+  
+  <!-- 已结量 -->
+  <select id="queryYjaccQuantity" resultType="java.lang.Double" parameterType="java.util.Map" >
+    select sum(mc.REAL_QUANTITY) 
+	from <include refid="Table_List2" />
+	where <include refid="Condition_List2" />
+	<if test="prId != null and prId != ''">
+		     and p.PR_ID=#{prId}
+	</if>
+	<if test="pId != null and pId != ''">
+		     and pa.P_ID=#{pId}
+	</if>
+	<if test="psId != null and psId != ''">
+		     and mc.PS_ID=#{psId}
+	</if>
+	<if test="oId != null and oId != ''">
+		     and mc.O_ID=#{oId}
+	</if>
+	<if test="pcPId != null and pcPId != ''">
+		     and prpc.PC_P_ID=#{pcPId}
+	</if>
+	<if test="cuId != null and cuId !=''">
+		     and cu.CU_ID=#{cuId}
+	</if>
+	<if test="mtId != null and mtId !=''">
+		     and m.MT_ID=#{mtId}
+	</if>
+	<if test="unId != null and unId !=''">
+		     and u.UN_ID=#{unId}
+	</if>
+  </select>
+  
+  
+  <!-- 累计已结工程量 -->
+  <select id="queryLjaccQuantity" resultType="java.lang.Double" parameterType="java.util.Map" >
+    select sum(mc.REAL_QUANTITY) 
+	from MISSION_CONTENT mc, MISSION m
+	where m.STATUS=100 and m.M_ID = mc.M_ID
+	<if test="prId != null and prId != ''">
+		     and m.PR_ID=#{prId}
+	</if>
+	<if test="pId != null and pId != ''">
+		     and mc.P_ID=#{pId}
+	</if>
+	<if test="psId != null and psId != ''">
+		     and mc.PS_ID=#{psId}
+	</if>
+	<if test="oId != null and oId != ''">
+		     and mc.O_ID=#{oId}
+	</if>
+	<if test="cuId != null and cuId !=''">
+		     and m.CU_ID=#{cuId}
+	</if>
+	<if test="mtId != null and mtId !=''">
+		     and m.MT_ID=#{mtId}
+	</if>
+	<if test="unId != null and unId !=''">
+		     and mc.UN_ID=#{unId}
+	</if>
+  </select>
+  
+  
+
+  <!-- 预算查询已审核工程量 -->   
+  <select id="selectYSRealQuantity" resultType="java.lang.Float" parameterType="java.lang.String" >
+    select sum(mc.REAL_QUANTITY) from MISSION_CONTENT mc,  MISSION m, MISSION_TYPE mt
+   
+	where  m.M_ID=mc.M_ID and m.MT_ID=mt.MT_ID and mt.MT_CODE=1 and
+	m.CU_ID=#{0} and m.PC_P_ID=#{1} and mc.O_ID=#{2}
+    and m.STATUS=100
+  </select>
+
+
+
+  <insert id="insertMissionContent" parameterType="com.org.cygs.pojo.MissionContent" >
+    insert into MISSION_CONTENT
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="mcId != null">
+        MC_ID,
+      </if>
+      <if test="mcCode != null">
+        MC_CODE,
+      </if>
+      <if test="price != null">
+        PRICE,
+      </if>
+      <if test="realQuantity != null">
+        REAL_QUANTITY,
+      </if>
+      <if test="wageSum != null">
+        WAGE_SUM,
+      </if>
+      <if test="accumulateSum != null">
+        ACCUMULATE_SUM,
+      </if>
+      <if test="floor != null">
+        FLOOR,
+      </if>
+      <if test="oId != null">
+        O_ID,
+      </if>
+      <if test="unId != null">
+        UN_ID,
+      </if>
+      <if test="remark != null">
+        REMARK,
+      </if>
+      <if test="mId != null">
+        M_ID,
+      </if>
+      <if test="psId != null">
+        PS_ID,
+      </if>
+      <if test="pId != null">
+        P_ID,
+      </if>
+      <if test="partPos != null" >
+        PART_POS,
+      </if>
+      <if test="partItemone != null" >
+        PART_ITEMONE,
+      </if>
+      <if test="partItemtwo != null" >
+        PART_ITEMTWO,
+      </if>
+      <if test="partItemthree != null" >
+        PART_ITEMTHREE,
+      </if>
+      <if test="isreturn != null">
+        ISRETURN,
+      </if>
+      <if test="innerId != null">
+        INNER_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="mcId != null">
+        #{mcId, jdbcType=VARCHAR},
+      </if>
+      <if test="mcCode != null">
+        #{mcCode, jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        #{price, jdbcType=DECIMAL},
+      </if>
+      <if test="realQuantity != null">
+        #{realQuantity, jdbcType=DECIMAL},
+      </if>
+      <if test="wageSum != null">
+        #{wageSum, jdbcType=DECIMAL},
+      </if>
+      <if test="accumulateSum != null">
+        #{accumulateSum, jdbcType=DECIMAL},
+      </if>
+      <if test="floor != null">
+        #{floor, jdbcType=VARCHAR},
+      </if>
+      <if test="oId != null">
+        #{oId, jdbcType=VARCHAR},
+      </if>
+      <if test="unId != null">
+        #{unId, jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark, jdbcType=VARCHAR},
+      </if>
+      <if test="mId != null">
+        #{mId, jdbcType=VARCHAR},
+      </if>
+      <if test="psId != null">
+        #{psId, jdbcType=VARCHAR},
+      </if>
+      <if test="pId != null">
+        #{pId, jdbcType=VARCHAR},
+      </if>
+      <if test="partPos != null" >
+        #{partPos,jdbcType=VARCHAR},
+      </if>
+      <if test="partItemone != null" >
+        #{partItemone,jdbcType=VARCHAR},
+      </if>
+      <if test="partItemtwo != null" >
+        #{partItemtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="partItemthree != null" >
+        #{partItemthree,jdbcType=VARCHAR},
+      </if>
+      <if test="isreturn != null">
+        #{isreturn, jdbcType=VARCHAR},
+      </if>
+      <if test="innerId != null">
+        #{innerId, jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 查询员工工资情况 -->
+  <select id="getMissionContentByList" parameterType="java.util.List" resultMap="BaseResultMap">
+  		select mc.[FLOOR],MAX(mc.[M_ID]) as M_ID,SUM(mc.[WAGE_SUM]) as WAGE_SUM
+  			from [dbo].[MISSION_CONTENT] mc
+  			<where>
+  				mc.[M_ID] in 
+  				<foreach collection="midList" item="item" index="index" open="(" close=")" separator=",">
+  					#{item}
+  				</foreach>
+  			</where>
+  			order by mc.[FLOOR]
+  </select>
+  
+ 
+ <update id="updateMissionContent" parameterType="com.org.cygs.pojo.MissionContent">
+    update MISSION_CONTENT
+    <set>
+      <if test="mcCode != null">
+        MC_CODE = #{mcCode,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        PRICE = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="realQuantity != null">
+        REAL_QUANTITY = #{realQuantity,jdbcType=DECIMAL},
+      </if>
+      <if test="wageSum != null">
+        WAGE_SUM = #{wageSum,jdbcType=DECIMAL},
+      </if>
+      <if test="accumulateSum != null">
+        ACCUMULATE_SUM = #{accumulateSum,jdbcType=DECIMAL},
+      </if>
+      <if test="floor != null">
+        FLOOR = #{floor,jdbcType=VARCHAR},
+      </if>
+      <if test="oId != null">
+        O_ID = #{oId,jdbcType=VARCHAR},
+      </if>
+      <if test="unId != null">
+        UN_ID = #{unId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="mId != null">
+        M_ID = #{mId,jdbcType=VARCHAR},
+      </if>
+      <if test="psId != null">
+        PS_ID = #{psId,jdbcType=VARCHAR},
+      </if>
+      <if test="pId != null">
+        P_ID = #{pId,jdbcType=VARCHAR},
+      </if>
+      <if test="partPos != null">
+        PART_POS = #{partPos,jdbcType=VARCHAR},
+      </if>
+      <if test="partItemone != null">
+        PART_ITEMONE = #{partItemone,jdbcType=VARCHAR},
+      </if>
+      <if test="partItemtwo != null">
+        PART_ITEMTWO = #{partItemtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="partItemthree != null">
+        PART_ITEMTHREE = #{partItemthree,jdbcType=VARCHAR},
+      </if>
+      <if test="isreturn != null">
+        ISRETURN = #{isreturn,jdbcType=VARCHAR},
+      </if>
+      <if test="innerId != null">
+        INNER_ID = #{innerId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where MC_ID = #{mcId,jdbcType=VARCHAR}
+  </update>
+ 
+ 
+ 
+</mapper>

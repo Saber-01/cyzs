@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.ProjectDao" >    
+    <resultMap id="project" type="com.org.cygs.pojo.Project">  
+        <result column="PR_ID" property="prId" jdbcType="VARCHAR" />  
+        <result column="PR_CODE" property="prCode" jdbcType="VARCHAR" /> 
+        <result column="PR_NAME" property="prName" jdbcType="VARCHAR" />      
+        <result column="U_ID" property="uId" jdbcType="VARCHAR"/>
+        <result column="PR_TIME" property="prTime" jdbcType="DATE"/>
+        <result column="SHENJI_ID" property="shenjiId" jdbcType="VARCHAR"/>
+        <result column="CHENGKONGJINGLI_ID" property="ckjlId" jdbcType="VARCHAR"/>
+        <result column="BUDGET_SUM" property="budgetSum" jdbcType="DECIMAL"/>
+        <result column="CHENGKONGFUJINGLI_ID" property="ckfjlId" jdbcType="VARCHAR"/>
+        <result column="ZHUGUANYUSUAN_ID" property="zgysId" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap type="com.org.cygs.pojo.User" id="user">
+    	<result column="U_ID" property="uId" jdbcType="VARCHAR"/>
+    	<result column="USER_NAME" property="userName" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap type="com.org.cygs.pojo.PrIndexPC" id="prindexpc">
+    	<result column="PC_P_ID" property="pcPId" jdbcType="VARCHAR"/>
+    	<result column="PC_ID" property="pcId" jdbcType="VARCHAR"/>
+    	<result column="PR_ID" property="prId" jdbcType="VARCHAR"/>
+    	<result column="UNIT_NUMBER" property="unitNumber" jdbcType="VARCHAR"/>
+    	<result column="BUDGET_SUM" property="budgetSum" jdbcType="DECIMAL"/>
+    	<result column="USER_NAME" property="uName" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <!-- 获取所有的工程信息 -->
+    <select id="getAllProject" resultMap="project">
+    	select * from 
+    	[dbo].[PROJECT]
+    	order by [PR_CODE] asc
+    </select>
+    
+    <!-- 获取所有的工程，仅包含id与名称 -->
+    <select id="getAllProjectName" resultMap="project">
+    	select distinct p.[PR_ID],p.[PR_NAME] 
+    		from [dbo].[PROJECT] p
+    	order by p.[PR_ID] asc
+    </select>
+    
+    <!-- 获取工长对应的工程 -->
+    <select id="selectProjectByGongzhang" resultMap="project" parameterType="java.lang.String">
+		select DISTINCT p.PR_ID, p.PR_NAME
+		from PROJECT p, PR_INDEX_S ps
+		where
+		p.PR_ID = ps.PR_ID and ps.U_ID=#{0}
+	</select>
+	<!-- 获取预算人员对应的工程 -->
+    <select id="selectProjectByYusuan" resultMap="project" parameterType="java.lang.String">
+		select DISTINCT p.PR_ID, p.PR_NAME
+		from PROJECT p, PR_INDEX_PC pc
+		where
+		p.PR_ID = pc.PR_ID and pc.U_ID=#{0}
+	</select>
+    
+    
+    <!-- 获取经理等人员的姓名 -->
+    <select id="getPersonNameById" resultType="java.lang.String" parameterType="java.lang.String">
+    	select u.[USER_NAME] from
+    	 [dbo].[USER_TABLE] u
+    	 where u.[U_ID] = #{uId,jdbcType=VARCHAR}
+    </select>
+    <!-- 根据id获取project -->
+    <select id="getProjectById" resultMap="project" parameterType="java.lang.String">
+    	select * from 
+    		[dbo].[PROJECT]
+    		where PR_ID=#{prId,jdbcType=VARCHAR}
+    </select>
+    
+    
+     <!-- 根据项目经理id获取project -->
+    <select id="getProjectByUId" resultMap="project" parameterType="java.lang.String">
+    	select PR_ID,PR_NAME
+    	from [dbo].[PROJECT]
+        where U_ID=#{uId,jdbcType=VARCHAR}
+        order by PR_NAME asc
+    </select>
+    
+     <!-- 根据成控部经理id获取project -->
+    <select id="getProjectByChengkonId" resultMap="project" parameterType="java.lang.String">
+    	select PR_ID,PR_NAME
+    	from [dbo].[PROJECT]
+        where CHENGKONGJINGLI_ID=#{uId,jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 根据成控部副经理id获取project -->
+    <select id="getProjectByChengkonFuId" resultMap="project" parameterType="java.lang.String">
+    	select PR_ID,PR_NAME
+    	from [dbo].[PROJECT]
+        where CHENGKONGFUJINGLI_ID=#{uId,jdbcType=VARCHAR}
+    </select>
+    
+    
+     <!-- 根据主管预算id获取project -->
+    <select id="getProjectByZhuguanId" resultMap="project" parameterType="java.lang.String">
+    	select PR_ID,PR_NAME
+    	from [dbo].[PROJECT]
+        where ZHUGUANYUSUAN_ID=#{uId,jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 根据审计id获取project -->
+    <select id="getProjectByShenJiId" resultMap="project" parameterType="java.lang.String">
+    	select PR_ID,PR_NAME
+    	from [dbo].[PROJECT]
+        where SHENJI_ID=#{uId,jdbcType=VARCHAR}
+    </select>
+    
+     <!-- 查看工程对应的项目经理名称 -->
+    <select id="getUserName" resultType="java.lang.String" parameterType="java.lang.String">
+    	select ut.USER_NAME
+    	from [dbo].[PROJECT] pr, [dbo].[USER_TABLE] ut
+        where pr.U_ID = ut.U_ID and pr.PR_ID = #{prId,jdbcType=VARCHAR}
+    </select>
+    <!-- 查看工程对应的审计名称 -->
+    <select id="getShenJiName" resultType="java.lang.String" parameterType="java.lang.String">
+    	select ut.USER_NAME
+    	from [dbo].[PROJECT] pr, [dbo].[USER_TABLE] ut
+        where pr.SHENJI_ID = ut.U_ID and pr.PR_ID = #{prId,jdbcType=VARCHAR}
+    </select>
+    <!-- 查看工程对应的主管预算名称 -->
+    <select id="getZhuGuanName" resultType="java.lang.String" parameterType="java.lang.String">
+    	select ut.USER_NAME
+    	from [dbo].[PROJECT] pr, [dbo].[USER_TABLE] ut
+        where pr.ZHUGUANYUSUAN_ID = ut.U_ID and pr.PR_ID = #{prId,jdbcType=VARCHAR}
+    </select>
+    
+    
+    
+    
+    
+    
+    
+    <!-- 用于判断插入、修改工程名称是否重复 -->
+    <select id="judgeProject" resultMap="project" parameterType="com.org.cygs.pojo.Project">
+    	select * from 
+    		[dbo].[PROJECT]
+    	<where>
+    		<if test="prName != null and prName != ''">
+    			PR_NAME = #{prName,jdbcType=VARCHAR}
+    		</if>
+    	</where>
+    </select>
+    
+    <!-- 用于判断插入、修改工程楼栋号是否重复 -->
+    <select id="judgeProjectDetail" resultMap="prindexpc" parameterType="com.org.cygs.pojo.PrIndexPC">
+    	select * from
+    		[dbo].[PR_INDEX_PC]
+    	<where>
+    		<if test="prId != null and prId != ''">
+    			PR_ID = #{prId,jdbcType=VARCHAR}
+    		</if>
+    		<if test="unitNumber != null and unitNumber != ''">
+    			and UNIT_NUMBER = #{unitNumber,jdbcType=VARCHAR}
+    		</if>
+    	</where>
+    </select>
+    
+    <!-- 通过roleType 获取所有的角色，如经理、审计等 -->
+    <select id="getAllRole" resultMap="user" parameterType="java.lang.String">
+    	select distinct ut.[USER_NAME],ut.[U_ID]
+    	from [dbo].[USER_TABLE] ut,[dbo].[USER_ROLE] ur,[dbo].[ROLE] r
+    	where ut.[U_ID] = ur.[U_ID] and ur.[RO_ID] = r.[RO_ID] and r.[ROLE_NAME] = #{roleType,jdbcType=VARCHAR}
+    </select>
+    <!-- 删除工程信息 -->
+    <delete id="projectDelete" parameterType="java.lang.String">
+    	delete from [dbo].[PROJECT]
+    	 where PR_ID = #{prId,jdbcType=VARCHAR}
+    </delete>
+    <!-- 根据工程号删除楼栋号 -->
+    <delete id="deletePrIndexPCByPrId" parameterType="java.lang.String">
+    	delete from PR_INDEX_PC 
+			where PR_ID = #{prId}
+    </delete>
+    <!-- 根据工程号删除工程辖工长 -->
+    <delete id="deletePrIndexSByPrId" parameterType="java.lang.String">
+    	delete from PR_INDEX_S
+    		where PR_ID = #{prId}
+    </delete>
+    <!-- 获取项目的详细信息：预算人员和楼栋号 -->
+    <select id="getProjectDetailById" resultMap="prindexpc" parameterType="java.lang.String">
+    	select distinct pp.[UNIT_NUMBER],pp.[PC_P_ID],pp.[PR_ID]
+    	from [dbo].[PR_INDEX_PC] pp
+    	where pp.[PR_ID] = #{prId,jdbcType=VARCHAR}
+    	order by UNIT_NUMBER asc
+    </select>
+    
+    <!-- 根据PC_P_ID获取 楼栋号与预算人员 -->
+    <select id="getPrIndexPCById" parameterType="java.lang.String" resultMap="prindexpc">
+    	select pp.[PC_P_ID],pp.[UNIT_NUMBER],pp.[PR_ID]
+    	from [dbo].[PR_INDEX_PC] pp
+    	where pp.[PC_P_ID] = #{pcPId,jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 删除项目里的详细信息 -->
+    <delete id="projectDetailDeleteById" parameterType="java.lang.String">
+    	delete from [dbo].[PR_INDEX_PC]
+    	where [PC_P_ID] = #{pcPId,jdbcType=VARCHAR}
+    </delete>
+    
+    <!-- 修改项目里的详细信息 -->
+    <update id="projectDetailEdit" parameterType="com.org.cygs.pojo.PrIndexPC">
+    	update [dbo].[PR_INDEX_PC]
+    	<set>
+    		<if test="unitNumber != null">
+    			UNIT_NUMBER = #{unitNumber,jdbcType=VARCHAR}
+    		</if>
+    		<if test="uId != null">
+    			U_ID = #{uId,jdbcType=VARCHAR}
+    		</if>
+    	</set>
+    	where PC_P_ID = #{pcPId,jdbcType=VARCHAR}
+    </update>
+    
+    <!-- 新增项目里详细信息：楼栋号和预算人员 -->
+    <insert id="projectDetailAdd" parameterType="com.org.cygs.pojo.PrIndexPC">
+    	insert into [dbo].[PR_INDEX_PC](PR_ID,UNIT_NUMBER)
+    	values(#{prId},#{unitNumber})
+    </insert>
+    
+    <!-- 修改工程信息 -->
+    <update id="projectEdit" parameterType="com.org.cygs.pojo.Project">
+    	update [dbo].[PROJECT]
+    	 <set>    
+          <if test="prCode != null" >    
+            PR_CODE = #{prCode,jdbcType=CHAR},    
+          </if>    
+          <if test="prName != null" >    
+            PR_NAME = #{prName,jdbcType=VARCHAR},    
+          </if>
+          <if test="uId != null">
+          	U_ID = #{uId,jdbcType=VARCHAR},
+          </if>  
+          <if test="prTime != null">
+          	PR_TIME = #{prTime,jdbcType=DATE},
+          </if>
+          <if test="shenjiId != null">
+          	SHENJI_ID = #{shenjiId,jdbcType=VARCHAR},
+          </if>
+          <if test="ckjlId != null">
+          	CHENGKONGJINGLI_ID = #{ckjlId,jdbcType=VARCHAR},
+          </if>
+          <if test="ckfjlId != null">
+          	CHENGKONGFUJINGLI_ID = #{ckfjlId,jdbcType=VARCHAR},
+          </if>
+          <if test="zgysId != null">
+          	ZHUGUANYUSUAN_ID = #{zgysId,jdbcType=VARCHAR},
+          </if>
+        </set>
+         where PR_ID = #{prId,jdbcType=VARCHAR}
+    </update>
+    
+    <!-- 添加 工程信息 -->
+    <insert id="projectAdd" parameterType="com.org.cygs.pojo.Project">
+    	insert into [dbo].[PROJECT](PR_CODE,PR_NAME,U_ID,PR_TIME,SHENJI_ID,CHENGKONGJINGLI_ID,BUDGET_SUM,CHENGKONGFUJINGLI_ID,ZHUGUANYUSUAN_ID)
+    	values(#{prCode},#{prName},#{uId},#{prTime},#{shenjiId},#{ckjlId},#{budgetSum},#{ckfjlId},#{zgysId})
+    </insert>
+    
+    <!-- 获取prCode最大值 -->
+    <select id="getPrCode" resultType="java.lang.Integer">
+    	select MAX(PR_CODE) from PROJECT
+    </select>
+    
+    <!-- 获取工程条目数 -->
+    <select id="getCount" resultType="java.lang.Integer">
+    	select count(*) from 
+    	[dbo].[PROJECT]
+    </select>
+    
+    <!-- 获取分页数据 -->
+    <select id="selectProjectList" parameterType="java.util.Map" resultMap="project">
+    	select * from 
+    	[dbo].[PROJECT]
+    	order by [PR_CODE] asc
+    	Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+    
+    <!-- 根据用户登录名获取与之关联的工程列表 -->
+    <select id="getProjectListByUserLoginName" parameterType="java.lang.String" resultMap="project">
+    	select pr.[PR_ID],pr.[PR_NAME]
+    		from [dbo].[PROJECT] pr,[dbo].[USER_TABLE] ut,[dbo].[PR_INDEX_S] pis
+    		where ut.[USER_LOGIN_NAME] = #{userLoginName} and ut.[U_ID] = pis.[U_ID] and pis.[PR_ID] = pr.[PR_ID]
+    		order by pr.[PR_NAME] asc
+    </select>
+
+    
+        
+     <!-- 根据项目经理id获取project -->
+    <select id="getProjectByPrName" resultMap="project" parameterType="java.lang.String">
+    	select PR_ID,PR_NAME
+    	from [dbo].[PROJECT]
+        where PR_NAME=#{_parameter,jdbcType=VARCHAR}
+        order by PR_NAME asc
+    </select>
+    
+        <!-- 获取项目的详细信息：预算人员和楼栋号 -->
+    <select id="getPrIndexPCByOption" resultMap="prindexpc" parameterType="java.lang.String">
+    	select distinct pp.[UNIT_NUMBER],pp.[PC_P_ID],pp.[PR_ID]
+    	from [dbo].[PR_INDEX_PC] pp
+    	where pp.[PR_ID] = #{0,jdbcType=VARCHAR}
+    	and pp.[UNIT_NUMBER] = #{1,jdbcType=VARCHAR}
+    </select>
+
+      <!-- 获取工程条目数 -->   
+        <select id="getProjectCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+    	select count(*) from 
+    	[dbo].[PROJECT]
+    </select>
+ 
+     <!-- 获取分页数据 -->
+    <select id="getProjectList" parameterType="java.util.Map" resultMap="project">
+    	select * from 
+    	[dbo].[PROJECT]
+    	order by [PR_CODE] asc
+    	Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>   
+	<!-- 获取楼栋号 -->
+	<select id="getPrIndexPCList" parameterType="java.util.Map" resultMap="prindexpc">
+		select * from
+			[dbo].[PR_INDEX_PC]
+		<where>
+			<if test="prId != null and prId != ''">
+				PR_ID = #{prId}	
+			</if>
+		</where>
+		order by PC_P_ID asc
+		Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+	</select>
+	
+	<!-- 获取楼栋号数量 -->
+	<select id="getPrIndexPCCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(*)
+			from [dbo].[PR_INDEX_PC]
+			<where>
+			<if test="prId != null and prId != ''">
+				PR_ID = #{prId}	
+			</if>
+		</where>
+	</select>
+</mapper>

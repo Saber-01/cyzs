@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.MissionHistoryDao" >
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.MissionHistory" >
+    <id column="MH_ID" property="mhId" jdbcType="VARCHAR" />
+    <result column="M_ID" property="mId" jdbcType="VARCHAR" />
+    <result column="BEGIN_DATE" property="beginDate" jdbcType="TIMESTAMP" />
+    <result column="END_DATE" property="endDate" jdbcType="TIMESTAMP" />
+    <result column="M_CODE" property="mCode" jdbcType="VARCHAR" />
+    <result column="SUBMIT_TIME" property="submitTime" jdbcType="TIMESTAMP" />
+    <result column="STATUS" property="status" jdbcType="INTEGER" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="EDTION_ID" property="edtionId" jdbcType="INTEGER" />
+    <result column="REMARK1" property="remark1" jdbcType="VARCHAR" />
+    <result column="REMARK2" property="remark2" jdbcType="VARCHAR" />
+    <result column="SUPERVISOR" property="supervisor" jdbcType="VARCHAR" />
+    <result column="RECORDER_ID" property="recorderId" jdbcType="VARCHAR" />
+    <result column="ISOVERDUE" property="isoverdue" jdbcType="INTEGER" />
+    <result column="LAST_AUDIT_TIME" property="lastAuditTime" jdbcType="TIMESTAMP" />
+    <result column="PR_ID" property="prId" jdbcType="VARCHAR" />
+    <result column="PR_NAME" property="prName" jdbcType="VARCHAR" />
+    <result column="CU_ID" property="cuId" jdbcType="VARCHAR" />
+    <result column="CU_NAME" property="cuName" jdbcType="VARCHAR" />
+    <result column="MT_ID" property="mtId" jdbcType="VARCHAR" />
+    <result column="MT_NAME" property="mtName" jdbcType="VARCHAR" />
+    <result column="MT_CODE" property="mtCode" jdbcType="INTEGER" />
+    <result column="PC_P_ID" property="pcPId" jdbcType="VARCHAR" />
+    <result column="UNIT_NUMBER" property="unitNumber" jdbcType="VARCHAR" />   
+  </resultMap>
+  
+  <sql id="Column_List">
+       m.M_ID,m.M_CODE,m.BEGIN_DATE,m.END_DATE,m.SUBMIT_TIME,m.STATUS,m.CU_ID,m.PR_ID,m.PC_P_ID,m.MT_ID,
+       pc.UNIT_NUMBER,c.CU_NAME,pr.PR_NAME,mt.MT_NAME
+    </sql>
+  <sql id="Table_List">  
+      [dbo].[MISSION_HISTORY] m,[dbo].[PR_INDEX_PC] pc,[dbo].[PROJECT] pr,[dbo].[CHECK_UNIT] c,[dbo].[MISSION_TYPE] mt
+  </sql>
+  
+  <sql id="Condition_List">
+        m.CU_ID = c.CU_ID and m.PR_ID = pr.PR_ID and m.PC_P_ID = pc.PC_P_ID and m.MT_ID = mt.MT_ID
+  </sql>
+  
+    <select id="getMaxMhIdBymId" parameterType="java.lang.String" resultType="java.lang.String">  
+        select Max(MH_ID) 
+        from [dbo].[MISSION_HISTORY]
+        where M_ID = #{mId}
+    </select>
+  
+  <insert id="addMissionHistory" parameterType="com.org.cygs.pojo.Mission">  
+        insert into [dbo].[MISSION_HISTORY]
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+          <if test="mId != null" >    
+            M_ID,
+          </if>
+          <if test="prId != null" >    
+            PR_ID,
+          </if>    
+          <if test="beginDate != null" >    
+            BEGIN_DATE,    
+          </if>    
+          <if test="endDate != null" >    
+            END_DATE,    
+          </if>    
+          <if test="mCode != null" >    
+            M_CODE,    
+          </if>  
+          <if test="cuId != null" >    
+            CU_ID,    
+          </if> 
+          <if test="submitTime != null" >    
+            SUBMIT_TIME,    
+          </if> 
+          <if test="status != null" >    
+            STATUS,    
+          </if> 
+          <if test="remark != null" >    
+            REMARK,    
+          </if> 
+          <if test="mtId != null" >    
+            MT_ID,    
+          </if> 
+          <if test="edtionId != null" >    
+            EDTION_ID,    
+          </if> 
+          <if test="recorderId != null" >    
+            RECORDER_ID,    
+          </if> 
+          <if test="pcPId != null" >    
+            PC_P_ID,    
+          </if> 
+          <if test="remark1 != null" >    
+            REMARK1,    
+          </if> 
+          <if test="remark2 != null" >    
+            REMARK2,    
+          </if> 
+          <if test="isoverdue != null" >    
+            ISOVERDUE,    
+          </if> 
+          <if test="supervisor != null" >    
+            SUPERVISOR,    
+          </if>
+          <if test="lastAuditTime != null" >    
+            LAST_AUDIT_TIME,    
+          </if> 
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+          <if test="mId != null" >    
+            #{mId, jdbcType=VARCHAR},
+          </if>
+          <if test="prId != null" >    
+            #{prId, jdbcType=VARCHAR},
+          </if>    
+          <if test="beginDate != null" >    
+            #{beginDate, jdbcType=TIMESTAMP},
+          </if>    
+          <if test="endDate != null" >    
+            #{endDate, jdbcType=TIMESTAMP},
+          </if>    
+          <if test="mCode != null" >    
+            #{mCode, jdbcType=VARCHAR},
+          </if>  
+          <if test="cuId != null" >    
+            #{cuId, jdbcType=VARCHAR},
+          </if> 
+          <if test="submitTime != null" >    
+            #{submitTime, jdbcType=TIMESTAMP},
+          </if> 
+          <if test="status != null" >    
+            #{status, jdbcType=INTEGER},
+          </if> 
+          <if test="remark != null" >    
+            #{remark, jdbcType=VARCHAR},
+          </if> 
+          <if test="mtId != null" >    
+            #{mtId, jdbcType=VARCHAR},
+          </if> 
+          <if test="edtionId != null" >    
+            #{edtionId, jdbcType=INTEGER},
+          </if> 
+          <if test="recorderId != null" >    
+            #{recorderId, jdbcType=VARCHAR},
+          </if> 
+          <if test="pcPId != null" >    
+            #{pcPId, jdbcType=VARCHAR},
+          </if> 
+          <if test="remark1 != null" >    
+            #{remark1, jdbcType=VARCHAR},
+          </if> 
+          <if test="remark2 != null" >    
+            #{remark2, jdbcType=VARCHAR},
+          </if> 
+          <if test="isoverdue != null" >    
+            #{isoverdue, jdbcType=INTEGER},
+          </if> 
+          <if test="supervisor != null" >    
+            #{supervisor, jdbcType=VARCHAR},
+          </if>
+          <if test="lastAuditTime != null" >    
+            #{lastAuditTime, jdbcType=TIMESTAMP},
+          </if> 
+        </trim>     
+    </insert> 
+  <!-- 通过任务书id查询历史任务书 -->  
+    <select id="getMHListByMId" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select MH_ID
+        from [dbo].[MISSION_HISTORY]
+       <where>
+        M_ID = #{mId}
+	   </where>     
+    </select>
+    
+    <!-- 通过任务书id查询对应任务书 -->  
+   <select id="getMHByMhId" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select
+        <include refid="Column_List" />, m.SUPERVISOR,mt.MT_CODE
+        from 
+        <include refid="Table_List" />
+       <where>
+        <include refid="Condition_List" /> and m.MH_ID = #{mhId}
+	   </where>     
+   </select>
+    
+    
+  
+  </mapper>

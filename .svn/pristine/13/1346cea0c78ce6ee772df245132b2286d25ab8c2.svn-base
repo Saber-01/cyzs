@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.CheckUnitDao" >    
+    <resultMap id="checkunit" type="com.org.cygs.pojo.CheckUnit">  
+        <result column="CU_ID" property="cuId" jdbcType="VARCHAR" />  
+        <result column="CU_CODE" property="cuCode" jdbcType="VARCHAR" /> 
+        <result column="CU_NAME" property="cuName" jdbcType="VARCHAR" />          
+    </resultMap>  
+    
+    
+  <select id="selectAllCheckUnit" resultMap="checkunit" >
+    select * from CHECK_UNIT order by CU_NAME
+  </select>
+    
+    
+    
+    <!-- 获取所有的结算单位信息 -->
+    <select id="getAllCheckUnit" resultMap="checkunit">
+    	select * from 
+    	[dbo].[CHECK_UNIT]
+    	order by [CU_NAME] asc
+    </select>
+    
+    <!-- 根据id获取checkunit -->
+    <select id="getCheckUnitById" resultMap="checkunit" parameterType="java.lang.String">
+    	select * from 
+    		[dbo].[CHECK_UNIT]
+    		where CU_ID=#{cuId,jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 用于判断插入或修改是否重复 -->
+    <select id="judgeCheckUnit" resultMap="checkunit" parameterType="com.org.cygs.pojo.CheckUnit">
+    	select * from 
+    		[dbo].[CHECK_UNIT]
+    	<where>
+    		<if test="cuCode != null and cuCode != ''">
+    			CU_CODE = #{cuCode,jdbcType=VARCHAR}
+    		</if>
+    		<if test="cuName != null and cuName != ''">
+    			or CU_NAME = #{cuName,jdbcType=VARCHAR}
+    		</if>
+    	</where>
+    </select>
+    
+    <!-- 查找checkunit -->
+    <select id="selectCheckUnitListByName" resultMap="checkunit" parameterType="java.lang.String">
+    	select * from 
+    		[dbo].[CHECK_UNIT]
+    	<where>
+    		<if test="_parameter !=null and _parameter !=''">
+    			CU_NAME = #{cuName}
+    		</if>
+    	</where>
+    	order by [CU_CODE] asc
+    </select>
+  
+    
+    <!-- 删除结算单位信息 -->
+    <delete id="checkUnitDelete" parameterType="java.lang.String">
+    	delete from [dbo].[CHECK_UNIT]
+    	 where CU_ID=#{cuId,jdbcType=VARCHAR}
+    </delete>
+    
+    <!-- 修改结算单位信息 -->
+    <update id="checkUnitEdit" parameterType="com.org.cygs.pojo.CheckUnit">
+    	update [dbo].[CHECK_UNIT]
+    	 <set>    
+          <if test="cuCode != null" >    
+            CU_CODE = #{cuCode,jdbcType=CHAR},    
+          </if>    
+          <if test="cuName != null" >    
+            CU_NAME = #{cuName,jdbcType=VARCHAR},    
+          </if>      
+        </set>
+         where CU_ID = #{cuId,jdbcType=VARCHAR}
+    </update>
+    
+    <!-- 添加 结算单位信息 -->
+    <insert id="checkUnitAdd" parameterType="com.org.cygs.pojo.CheckUnit">
+    	insert into [dbo].[CHECK_UNIT](CU_CODE,CU_NAME)
+    	values(#{cuCode},#{cuName})
+    </insert>
+    
+        <!-- 获取结算单位列表-->  
+    <select id="getCheckUnitList" parameterType="java.util.Map" resultMap="checkunit">  
+        select  * from [dbo].[CHECK_UNIT]
+        <where>
+        	<if test="cuName != null and cuName != ''">
+        		CU_NAME = #{cuName}
+        	</if>
+        </where>
+        order by [CU_ID] asc
+        Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+    
+    <!-- 获取结算单位数量-->  
+    <select id="getCheckUnitCount" parameterType="java.util.Map" resultType="java.lang.Integer">  
+        select count(*)
+        from [dbo].[CHECK_UNIT]
+        <where>
+        	<if test="cuName != null and cuName != ''">
+        		CU_NAME = #{cuName}
+        	</if>
+        </where>
+    </select>
+    
+</mapper>

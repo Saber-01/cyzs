@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.ProjectIndexSDao" >    
+    <resultMap id="projectindexs" type="com.org.cygs.pojo.ProjectIndexS">  
+        <result column="PR_S_ID" property="prSId" jdbcType="VARCHAR" />  
+        <result column="U_ID" property="uId" jdbcType="VARCHAR" /> 
+        <result column="PR_ID" property="prId" jdbcType="VARCHAR" />  
+        <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+        <result column="PR_NAME" property="prName" jdbcType="VARCHAR"/>
+        <result column="USER_NAME" property="uName" jdbcType="VARCHAR"/>        
+    </resultMap> 
+    
+    <sql id="Base_Column_List" >
+      ps.PR_S_ID, ps.U_ID, ps.PR_ID, p.PR_NAME, ps.REMARK
+  	</sql>
+  
+  	<sql id="Table_List">  
+     PR_INDEX_S ps, PROJECT p
+ 	</sql>
+    
+    <select id="selectSProject" resultMap="projectindexs" parameterType="java.lang.String">
+		select DISTINCT <include refid="Base_Column_List" /> 
+		from 
+		<include refid="Table_List" />
+		where
+		p.PR_ID = ps.PR_ID and ps.U_ID=#{0}
+	</select>
+    
+    
+    <!-- 获取所有的工程工长信息 -->
+    <select id="getAllProjectIndexS" resultMap="projectindexs">
+    	select p.[PR_S_ID],p.[U_ID],p.[PR_ID],p.[REMARK],u.[USER_NAME],pr.[PR_NAME] from 
+    	[dbo].[PR_INDEX_S] p,[dbo].[PROJECT] pr,[dbo].[USER_TABLE] u
+    	where p.[U_ID] = u.[U_ID] and p.[PR_ID] = pr.[PR_ID]
+    	order by p.[PR_S_ID]
+    </select>
+    
+    <!-- 获取所有的工长姓名和id -->
+    <select id="getAllGzName" resultMap="projectindexs">
+    	select distinct ut.[USER_NAME],ut.[U_ID]
+    	from [dbo].[USER_TABLE] ut,[dbo].[USER_ROLE] ur,[dbo].[ROLE] r
+    	where ur.[U_ID] = ut.[U_ID] and ur.[RO_ID] = r.[RO_ID] and r.[ROLE_NAME] = '工长'
+    </select>
+    
+    <!-- 模糊查找项目名称和工长姓名 -->
+    <select id="projectIndexSSearch" resultMap="projectindexs" parameterType="com.org.cygs.pojo.ProjectIndexS">
+    	select p.[PR_S_ID],p.[U_ID],p.[PR_ID],p.[REMARK],u.[USER_NAME],pr.[PR_NAME] from 
+    	[dbo].[PR_INDEX_S] p,[dbo].[PROJECT] pr,[dbo].[USER_TABLE] u
+    	<where>
+    		p.[U_ID] = u.[U_ID] and p.[PR_ID] = pr.[PR_ID]
+    		<if test="uName != null">
+    			and u.[USER_NAME] like CONCAT('%',#{uName},'%')
+    		</if>
+    		<if test="prName != null">
+    			and pr.[PR_NAME] = #{prName}
+    		</if>
+    	</where>
+    </select>
+    
+    <!-- 根据id获取projectIndexS -->
+    <select id="getProjectIndexSById" resultMap="projectindexs" parameterType="java.lang.String">
+    	select p.[PR_S_ID],p.[U_ID],p.[PR_ID],p.[REMARK],u.[USER_NAME],pr.[PR_NAME] from 
+    	[dbo].[PR_INDEX_S] p,[dbo].[PROJECT] pr,[dbo].[USER_TABLE] u
+    	where p.[PR_S_ID]=#{prSId,jdbcType=VARCHAR} and p.[PR_ID] = pr.[PR_ID] and p.[U_ID] = u.[U_ID]
+    </select>
+   
+   <!-- 新增、修改数据时，判断工长、工程是否重复 -->
+   <select id="judgeProjectIndexS" resultMap="projectindexs" parameterType="com.org.cygs.pojo.ProjectIndexS">
+   		select * from
+   			[dbo].[PR_INDEX_S]
+   		<where>
+   			<if test="uId != null">
+   				U_ID = #{uId,jdbcType=VARCHAR}
+   			</if>
+   			<if test="prId != null">
+   				and PR_ID = #{prId,jdbcType=VARCHAR}
+   			</if>
+   		</where>
+   </select>
+    
+    <!-- 删除工程工长信息 -->
+    <delete id="projectIndexSDelete" parameterType="java.lang.String">
+    	delete from [dbo].[PR_INDEX_S]
+    	 where PR_S_ID=#{prSId,jdbcType=VARCHAR}
+    </delete>
+    
+    <!-- 修改工程工长信息 -->
+    <update id="projectIndexSEdit" parameterType="com.org.cygs.pojo.ProjectIndexS">
+    	update [dbo].[PR_INDEX_S]
+    	 <set>    
+          <if test="uId != null" >    
+            U_ID = #{uId,jdbcType=CHAR},    
+          </if>    
+          <if test="prId != null" >    
+            PR_ID = #{prId,jdbcType=VARCHAR},    
+          </if>     
+          <if test="remark != null">
+          	REMARK = #{remark,jdbcType=VARCHAR},
+          </if> 
+        </set>
+         where PR_S_ID = #{prSId,jdbcType=VARCHAR}
+    </update>
+    
+    <!-- 添加 工长工程信息 -->
+    <insert id="projectIndexSAdd" parameterType="com.org.cygs.pojo.ProjectIndexS">
+    	insert into [dbo].[PR_INDEX_S](U_ID,PR_ID,REMARK)
+    	values(#{uId},#{prId},#{remark})
+    </insert>
+    
+    <!-- 获取条目数 -->
+    <select id="getCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+    	select count(*)
+    		from [dbo].[PR_INDEX_S] p,[dbo].[PROJECT] pr,[dbo].[USER_TABLE] u
+    	<where>
+    		p.[U_ID] = u.[U_ID] and p.[PR_ID] = pr.[PR_ID]
+    		<if test="prId != null and prId !=''">
+    			and p.[PR_ID] = #{prId} 
+    		</if>
+    		<if test="gzName != null and gzName !=''">
+    			and u.[USER_NAME] = #{gzName}
+    		</if>
+    	</where>
+    </select>
+    
+    <!-- 获取工程辖工长信息列表-->  
+    <select id="getProjectIndexSList" parameterType="java.util.Map" resultMap="projectindexs">  
+    	select p.[PR_S_ID],p.[U_ID],p.[PR_ID],p.[REMARK],u.[USER_NAME],pr.[PR_NAME] from 
+    		[dbo].[PR_INDEX_S] p,[dbo].[PROJECT] pr,[dbo].[USER_TABLE] u
+    		<where>
+    			 p.[U_ID] = u.[U_ID] and p.[PR_ID] = pr.[PR_ID]
+    			 <if test="prId != null and prId != ''">
+    			 	and p.[PR_ID] = #{prId}
+    			 </if>
+    			 <if test="gzName != null and gzName != ''">
+    			 	and u.[USER_NAME] = #{gzName}
+    			 </if>
+    		</where>
+    		order by p.[PR_S_ID]
+    		Offset #{offset} Row Fetch Next #{pageSize} Rows Only  
+    </select>
+</mapper>

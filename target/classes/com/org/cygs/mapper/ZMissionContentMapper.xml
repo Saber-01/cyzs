@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.ZMissionContentDao" >
+  <resultMap id="ZMissionContentMap" type="com.org.cygs.pojo.ZMissionContent" >
+    <id column="Z_MC_ID" property="zMcId" jdbcType="VARCHAR" />
+    <result column="MC_CODE" property="mcCode" jdbcType="INTEGER" />
+    <result column="PRICE" property="price" jdbcType="DECIMAL" />
+    <result column="REAL_QUANTITY" property="realQuantity" jdbcType="DECIMAL" />
+    <result column="WAGE_SUM" property="wageSum" jdbcType="DECIMAL" />
+    <result column="ACCUMULATE_SUM" property="accumulateSum" jdbcType="DECIMAL" />
+    <result column="FLOOR" property="floor" jdbcType="VARCHAR" />
+    <result column="Z_O_ID" property="zOId" jdbcType="VARCHAR" />
+    <result column="O_NAME" property="oName" jdbcType="VARCHAR" />
+    <result column="UN_ID" property="unId" jdbcType="VARCHAR" />
+    <result column="UN_NAME" property="unName" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="Z_M_ID" property="zMId" jdbcType="VARCHAR" />
+    <result column="Z_PS_ID" property="zPsId" jdbcType="VARCHAR" />
+    <result column="PS_NAME" property="psName" jdbcType="VARCHAR" />
+    <result column="Z_P_ID" property="zPId" jdbcType="VARCHAR" />
+    <result column="P_NAME" property="pName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+   <sql id="Column_List">
+		mc.Z_MC_ID,mc.MC_CODE,mc.PRICE,mc.REAL_QUANTITY,mc.ACCUMULATE_SUM,mc.WAGE_SUM,mc.FLOOR,mc.REMARK,p.P_NAME,o.O_NAME,ps.PS_NAME,u.UN_NAME
+   </sql>
+
+  <sql id="Table_List">  
+		[dbo].[Z_MISSION_CONTENT] mc,[dbo].[Z_PART] p,[dbo].[Z_PART_POSITION] ps,[dbo].[Z_OPERATION] o,[dbo].[UNIT] u
+  </sql>
+
+  <sql id="Condition_List">
+        mc.Z_PS_ID = ps.Z_PS_ID and mc.Z_P_ID = p.Z_P_ID and mc.Z_O_ID = o.Z_O_ID and mc.UN_ID = u.UN_ID
+  </sql>
+  
+  
+  <!-- 根据zMid查询任务书内容 -->
+  <select id="selectZMissionContent" resultMap="ZMissionContentMap" parameterType="java.lang.String" >
+    	select
+        <include refid="Column_List" />
+        from 
+       <include refid="Table_List" />
+       <where>
+        <include refid="Condition_List" />
+        and mc.Z_M_ID = #{zMId}
+	  </where>
+	  order by mc.MC_CODE
+  </select>
+  
+  <select id="selectZHTNQTMissionContent" resultMap="ZMissionContentMap" parameterType="java.lang.String" >
+    	select
+        mc.Z_MC_ID,mc.MC_CODE,mc.PRICE,mc.REAL_QUANTITY,mc.ACCUMULATE_SUM,mc.WAGE_SUM,mc.REMARK,p.P_NAME,o.O_NAME,ps.PS_NAME
+        from 
+       [dbo].[Z_MISSION_CONTENT] mc,[dbo].[Z_PART] p,[dbo].[Z_PART_POSITION] ps,[dbo].[Z_OPERATION] o
+       <where>
+        mc.Z_PS_ID = ps.Z_PS_ID and mc.Z_P_ID = p.Z_P_ID and mc.Z_O_ID = o.Z_O_ID 
+        and mc.Z_M_ID = #{zMId}
+	  </where>
+	  order by mc.MC_CODE
+  </select>
+
+
+  <insert id="insertSelective" parameterType="com.org.cygs.pojo.ZMissionContent" >
+    insert into Z_MISSION_CONTENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="zMcId != null" >
+        Z_MC_ID,
+      </if>
+      <if test="mcCode != null" >
+        MC_CODE,
+      </if>
+      <if test="price != null" >
+        PRICE,
+      </if>
+      <if test="realQuantity != null" >
+        REAL_QUANTITY,
+      </if>
+      <if test="wageSum != null" >
+        WAGE_SUM,
+      </if>
+      <if test="accumulateSum != null" >
+        ACCUMULATE_SUM,
+      </if>
+      <if test="floor != null" >
+        FLOOR,
+      </if>
+      <if test="zOId != null" >
+        Z_O_ID,
+      </if>
+      <if test="unId != null" >
+        UN_ID,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="zMId != null" >
+        Z_M_ID,
+      </if>
+      <if test="zPsId != null" >
+        Z_PS_ID,
+      </if>
+      <if test="zPId != null" >
+        Z_P_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="zMcId != null" >
+        #{zMcId,jdbcType=VARCHAR},
+      </if>
+      <if test="mcCode != null" >
+        #{mcCode,jdbcType=INTEGER},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="realQuantity != null" >
+        #{realQuantity,jdbcType=DECIMAL},
+      </if>
+      <if test="wageSum != null" >
+        #{wageSum,jdbcType=DECIMAL},
+      </if>
+      <if test="accumulateSum != null" >
+        #{accumulateSum,jdbcType=DECIMAL},
+      </if>
+      <if test="floor != null" >
+        #{floor,jdbcType=VARCHAR},
+      </if>
+      <if test="zOId != null" >
+        #{zOId,jdbcType=VARCHAR},
+      </if>
+      <if test="unId != null" >
+        #{unId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="zMId != null" >
+        #{zMId,jdbcType=VARCHAR},
+      </if>
+      <if test="zPsId != null" >
+        #{zPsId,jdbcType=VARCHAR},
+      </if>
+      <if test="zPId != null" >
+        #{zPId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+</mapper>

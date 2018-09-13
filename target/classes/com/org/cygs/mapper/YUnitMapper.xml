@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.YUnitDao" >    
+    <resultMap id="unit" type="com.org.cygs.pojo.Unit">  
+        <result column="UN_ID" property="unId" jdbcType="VARCHAR" />  
+        <result column="UN_CODE" property="unCode" jdbcType="VARCHAR" /> 
+        <result column="UN_NAME" property="unName" jdbcType="VARCHAR" />          
+    </resultMap>  
+    <!-- 获取所有的单位信息 -->
+    <select id="getAllUnit" resultMap="unit">
+    	select * from 
+    	[dbo].[UNIT]
+    	order by [UN_CODE] asc
+    </select>
+    
+    <!-- 根据id获取unit -->
+    <select id="getUnitById" resultMap="unit" parameterType="java.lang.String">
+    	select * from 
+    		[dbo].[UNIT]
+    		where UN_ID=#{unId,jdbcType=VARCHAR}
+    </select>
+    
+    <select id="getUnitByName" resultMap="unit" parameterType="java.lang.String">
+    	select * from 
+    		[dbo].[UNIT]
+    		where UN_NAME=#{unName,jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 用于判断插入是否重复、修改是否重复 -->
+    <select id="judgeUnit" resultMap="unit" parameterType="com.org.cygs.pojo.Unit">
+    	select * from
+    	[dbo].[UNIT]
+    	<where>
+    		<if test="unCode != null and unCode != ''">
+    			UN_CODE = #{unCode,jdbcType=VARCHAR}
+    		</if>
+    		<if test="unName != null and unCode != ''">
+    			or UN_NAME = #{unName,jdbcType=VARCHAR}
+    		</if>
+    	</where>
+    </select>
+    
+    <!-- 删除单位信息 -->
+    <delete id="unitDeleteById" parameterType="java.lang.String">
+    	delete from [dbo].[UNIT]
+    	 where UN_ID=#{unId,jdbcType=VARCHAR}
+    </delete>
+    
+    <!-- 修改单位信息 -->
+    <update id="unitEdit" parameterType="com.org.cygs.pojo.Unit">
+    	update [dbo].[UNIT]
+    	 <set>       
+          <if test="unName != null and unName != ''" >    
+            UN_NAME = #{unName,jdbcType=VARCHAR},    
+          </if>      
+        </set>    
+        where UN_ID = #{unId,jdbcType=VARCHAR}  
+    </update>
+    
+    <!-- 添加 单位信息 -->
+    <insert id="unitAdd" parameterType="com.org.cygs.pojo.Unit">
+    	insert into [dbo].[UNIT](UN_CODE,UN_NAME)
+    	values(#{unCode},#{unName})
+    </insert>
+    
+    <!-- 统计有多少个条目 -->
+    <select id="getCount" resultType="java.lang.Integer">
+    	select count(*)
+    		from [dbo].[UNIT]
+    </select>
+ 
+     <!-- 获取单位信息列表-->  
+    <select id="getUnitList" parameterType="java.util.Map" resultMap="unit">  
+        select * from [dbo].[UNIT]
+		<where>
+			<if test="unId != null and untId != ''">
+				UN_ID = #{unId,jdbcType=VARCHAR}
+			</if>
+			<if test="unCode != null and unCode != ''">
+				and UN_CODE = #{unCode,jdbcType=VARCHAR}
+			</if>
+			<if test="unName != null and unCode != ''">
+				and UN_NAME = #{unName,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by [UN_CODE] asc
+	    Offset #{offset} Row Fetch Next #{pageSize} Rows Only 
+    </select>  
+ 
+       <!-- 获取单位信息数量-->    
+        <select id="getUnitCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+    	select count(*)
+    		from [dbo].[UNIT]
+    		<where>
+			<if test="unId != null and untId != ''">
+				UN_ID = #{unId,jdbcType=VARCHAR}
+			</if>
+			<if test="unCode != null and unCode != ''">
+				and UN_CODE = #{unCode,jdbcType=VARCHAR}
+			</if>
+			<if test="unName != null and unCode != ''">
+				and UN_NAME = #{unName,jdbcType=VARCHAR}
+			</if>
+		</where>
+    </select>
+</mapper>

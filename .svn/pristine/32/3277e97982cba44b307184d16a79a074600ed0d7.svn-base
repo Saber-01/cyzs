@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.UserDao" >    
+    <resultMap id="BaseResultMap" type="com.org.cygs.pojo.User">  
+        <result column="U_ID" property="uId" jdbcType="VARCHAR" />  
+        <result column="USER_ID" property="userId" jdbcType="VARCHAR" /> 
+        <result column="USER_LOGIN_NAME" property="userLoginName" jdbcType="VARCHAR" />  
+        <result column="USER_NAME" property="userName" jdbcType="VARCHAR" /> 
+        <result column="USER_PASSWORD" property="userPassword" jdbcType="VARCHAR" />
+        <result column="RO_ID" property="roId" jdbcType="VARCHAR" />
+        <result column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+        <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+        <result column="USER_REMARK" property="userRemark" jdbcType="VARCHAR" /> 
+       
+    </resultMap>  
+  
+    <sql id="Base_Column_List">  
+        [U_ID], [USER_ID], [USER_LOGIN_NAME],[USER_NAME],[USER_PASSWORD],[RO_ID],[ROLE_ID],[ROLE_NAME]
+    </sql>  
+    
+    <sql id="Base_Column_List2">  
+        [RO_ID],[ROLE_ID],[ROLE_NAME]  
+    </sql>
+    
+    <sql id="Base_Column_List3">  
+        [U_ID], [USER_ID], [USER_LOGIN_NAME],[USER_NAME],[USER_PASSWORD],[USER_REMARK]
+    </sql> 
+  
+    <!-- 通过用户表主键查询查询用户-->  
+    <select id="getUserByUId" resultMap="BaseResultMap" parameterType="java.lang.String">  
+        select  
+        <include refid="Base_Column_List3" />  
+        from [dbo].[USER_TABLE]
+        where U_ID = #{Id,jdbcType=VARCHAR}  
+    </select>
+    
+    <!-- 通过用户角色表主键查询查询用户-->  
+    <select id="getUserByURId" resultMap="BaseResultMap" parameterType="java.lang.String">  
+        select  
+        <include refid="Base_Column_List3" />  
+        from [dbo].[UserAndRole]
+        where U_RO_ID = #{Id,jdbcType=VARCHAR}  
+    </select>
+    
+    
+    <select id="getUIdByLoginName" resultType="java.lang.String" parameterType="java.lang.String">  
+        select U_ID
+        from [dbo].[USER_TABLE]
+        where USER_LOGIN_NAME = #{userLoginName,jdbcType=VARCHAR}  
+    </select>
+    
+    <!-- 通过用户表最大ID-->  
+    <select id="getMaxUserId" resultType="java.lang.String">  
+        select MAX(USER_ID) 
+        from [dbo].[USER_TABLE]
+    </select>
+    
+    
+     <!-- 通过帐号和密码查询-->  
+    <select id="selectByLoginnameAndPassword" resultMap="BaseResultMap"  
+        parameterType="java.lang.String">  
+        select  
+        <include refid="Base_Column_List" />  
+        from [dbo].[UserAndRole] 
+        where  USER_LOGIN_NAME = #{0} and USER_PASSWORD = #{1}
+    </select>
+    
+    <!-- 通过编号查询用户主键-->  
+    <select id="getUIdByuserId" resultType="java.lang.String" parameterType="java.lang.String">  
+        select [U_ID]  
+        from [dbo].[USER_TABLE] 
+        where  USER_ID = #{userId}
+    </select>
+    
+    
+     <!-- 通过帐号和密码以及角色查询-->  
+    <select id="selectByLoginnameAndPasswordandRole" resultMap="BaseResultMap"  
+        parameterType="java.lang.String">  
+        select  
+        <include refid="Base_Column_List" />  
+        from [dbo].[UserAndRole] 
+        where  USER_LOGIN_NAME = #{0} and USER_PASSWORD = #{1} and RO_ID = #{2}
+    </select>
+    
+    
+    
+    <!-- 通过登录名查询角色-->  
+    <select id="getRoleByUserLoginName" resultMap="BaseResultMap"  
+        parameterType="java.lang.String">  
+        select  
+        <include refid="Base_Column_List2" />  
+        from [dbo].[UserAndRole] 
+        where  USER_LOGIN_NAME = #{userLoginName}
+    </select>
+    
+      
+      
+    <!-- 查询用户-->  
+    <select id="getUserList" parameterType="com.org.cygs.pojo.User" resultMap="BaseResultMap">  
+        select  
+        <include refid="Base_Column_List" />  
+        from [dbo].[UserAndRole]
+        <where>
+         <if test="roleId !=null and roleId !=''">
+		     and ROLE_ID=#{roleId}
+		  </if>
+		  <if test="userId !=null and userId !=''">
+		     and USER_ID=#{userId}
+		  </if>
+		  <if test="userName !=null and userName !=''">
+		     and USER_NAME=#{userName}
+		  </if>
+		  <if test="userLoginName !=null and userLoginName !=''">
+		     and USER_LOGIN_NAME=#{userLoginName}
+		  </if>
+		</where>
+        order by [USER_ID] asc  
+    </select>
+    
+    <!-- 修改密码 -->  
+    <update id="alterPassword" parameterType="java.lang.String">    
+        update [dbo].[UserAndRole] set 
+        [USER_PASSWORD] = #{1} 
+        where [U_ID] = #{0}   
+    </update>  
+    
+    <!-- 插入用户 -->  
+    <insert id="addUser" parameterType="com.org.cygs.pojo.User">  
+        insert into [dbo].[USER_TABLE]
+        <trim prefix="(" suffix=")" suffixOverrides="," >    
+          <if test="userId != null" >    
+            USER_ID,    
+          </if>    
+          <if test="userName != null" >    
+            USER_NAME,    
+          </if>    
+          <if test="userLoginName != null" >    
+            USER_LOGIN_NAME,    
+          </if>    
+          <if test="userPassword != null" >    
+            USER_PASSWORD,    
+          </if>  
+          <if test="userRemark != null" >    
+            USER_REMARK,    
+          </if>    
+        </trim>    
+        <trim prefix="values (" suffix=")" suffixOverrides="," >    
+          <if test="userId != null" >    
+            #{userId,jdbcType=VARCHAR},    
+          </if>    
+          <if test="userName != null" >    
+            #{userName,jdbcType=VARCHAR},    
+          </if>    
+          <if test="userLoginName != null" >    
+            #{userLoginName,jdbcType=VARCHAR},    
+          </if>
+          <if test="userPassword != null" >    
+            #{userPassword,jdbcType=VARCHAR},    
+          </if>     
+          <if test="userRemark != null" >    
+            #{userRemark,jdbcType=VARCHAR},    
+          </if>    
+        </trim>     
+    </insert> 
+    
+    
+    <!-- 更新用户 -->  
+    <update id="updateUser" parameterType="com.org.cygs.pojo.User" >    
+        update [dbo].[USER_TABLE]    
+        <set >    
+          <if test="userId != null" >    
+            USER_ID = #{userId,jdbcType=VARCHAR},    
+          </if>   
+          <if test="userName != null" >    
+            USER_NAME = #{userName,jdbcType=VARCHAR},    
+          </if>   
+          <if test="userLoginName != null" >    
+            USER_LOGIN_NAME = #{userLoginName,jdbcType=VARCHAR},    
+          </if>    
+          <if test="userPassword != null" >    
+            USER_PASSWORD = #{userPassword,jdbcType=VARCHAR},    
+          </if>    
+          <if test="userRemark != null" >    
+            USER_REMARK = #{userRemark,jdbcType=VARCHAR},    
+          </if>    
+        </set>    
+        where U_ID = #{uId,jdbcType=VARCHAR}   
+    </update>
+    
+    <!-- 删除用户 -->  
+    <delete id="deleteUser" parameterType="java.lang.String">  
+        delete from [dbo].[USER_TABLE]  
+        where U_ID = #{uId,jdbcType=VARCHAR}    
+    </delete> 
+    
+    
+    
+    
+    <!-- 更新用户 角色-->  
+    <update id="updateUserRole" parameterType="java.lang.String" >    
+        update [dbo].[USER_ROLE]    
+        <set >
+            RO_ID = #{1,jdbcType=VARCHAR},           
+        </set>    
+        where U_RO_ID = #{0,jdbcType=VARCHAR}   
+    </update>
+    
+    <!-- 删除用户已有角色 -->  
+    <delete id="deleteUserRoleByUId" parameterType="java.lang.String">  
+        delete from [dbo].[USER_ROLE]  
+        where U_ID = #{uId,jdbcType=VARCHAR}    
+    </delete> 
+    
+    
+    
+    <!-- 添加用户对应角色 -->  
+    <insert id="addUserRole" parameterType="java.lang.String">  
+        insert into [dbo].[USER_ROLE]
+        <trim prefix="(" suffix=")" suffixOverrides="," >           
+            U_ID,                   
+            RO_ID,    
+        </trim>    
+        <trim prefix="values (" suffix=")" suffixOverrides="," >         
+            #{0,jdbcType=VARCHAR},     
+            #{1,jdbcType=VARCHAR},    
+        </trim>     
+    </insert> 
+    
+      
+    <!-- 批量插入用户 -->  
+    <insert id="insertUserByBatch" parameterType="java.util.List" >  
+    insert into [dbo].[user]  
+       (ID,  
+        NAME,  
+        PASSWORD,  
+        AGE)  
+    select A.* from  
+         (  
+         <foreach collection="list" item="user" index="index" separator="union">  
+             select   
+             #{user.id,jdbcType=INTEGER},  
+             #{user.name,jdbcType=VARCHAR},  
+             #{user.password,jdbcType=VARCHAR},  
+             #{user.age,jdbcType=INTEGER}  
+              from dual  
+         </foreach>  
+         ) A  
+    </insert>  
+  
+    <!-- 批量查询用户-->  
+    <select id="queryUserByBatch" resultMap="BaseResultMap"  
+        parameterType="java.util.Map">  
+        select  
+        <include refid="Base_Column_List" />  
+        from [dbo].[user]  
+        where id in  
+        <foreach collection="idList" item="userId" index="index" open="(" separator="," close=")">  
+             #{userId,jdbcType=DECIMAL}  
+        </foreach>  
+    </select>  
+      
+    <!-- 批量删除用户 -->  
+    <delete id="deleteUserByBatch" parameterType="java.util.Map" >  
+     delete from [dbo].[user]  
+     where id IN   
+         <foreach item="ids" collection="iList" open="(" separator="," close=")">  
+             #{ids,jdbcType=DECIMAL}  
+         </foreach>  
+    </delete>  
+  
+    <!-- 根据角色名获取角色列表 -->
+    <select id="getAllUserByType" parameterType="java.lang.String" resultMap="BaseResultMap">
+    	select distinct ut.[USER_NAME],ut.[U_ID]
+    		from [dbo].[USER_TABLE] ut,[dbo].[USER_ROLE] ur,[dbo].[ROLE] r
+    		where ut.[U_ID] = ur.[U_ID] and ur.[RO_ID] = r.[RO_ID] and r.[ROLE_NAME] = #{roleType,jdbcType=VARCHAR}
+    </select>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <!-- 查询用户-->  
+    <select id="getUserListpp" parameterType="java.util.Map" resultMap="BaseResultMap">  
+        select  
+        <include refid="Base_Column_List" />  
+        from [dbo].[UserAndRole]
+        <where>
+         <if test="roleId !=null and roleId !=''">
+		     and ROLE_ID=#{roleId}
+		  </if>
+		  <if test="userId !=null and userId !=''">
+		     and USER_ID=#{userId}
+		  </if>
+		  <if test="userName !=null and userName !=''">
+		     and USER_NAME=#{userName}
+		  </if>
+		  <if test="userLoginName !=null and userLoginName !=''">
+		     and USER_LOGIN_NAME=#{userLoginName}
+		  </if>
+		</where>
+        order by [USER_ID] asc
+        Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+    
+    <!-- 查询用户-->  
+    <select id="getUserListppCount" parameterType="java.util.Map" resultType="java.lang.Integer">  
+        select count(*)
+        from [dbo].[UserAndRole]
+        <where>
+         <if test="roleId !=null and roleId !=''">
+		     and ROLE_ID=#{roleId}
+		  </if>
+		  <if test="userId !=null and userId !=''">
+		     and USER_ID=#{userId}
+		  </if>
+		  <if test="userName !=null and userName !=''">
+		     and USER_NAME=#{userName}
+		  </if>
+		  <if test="userLoginName !=null and userLoginName !=''">
+		     and USER_LOGIN_NAME=#{userLoginName}
+		  </if>
+		</where>
+    </select>
+    
+    
+    
+    
+</mapper>  

@@ -1,0 +1,198 @@
+@CHARSET "UTF-8";
+/**
+ ** 新建和修改任务书中table的样式
+**/
+#customers {
+	font-family: Microsoft Yahei,PingFang SC, Lantinghei SC, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans;
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: -17px;
+}
+
+#customers td, #customers th {
+	font-size: 1em;
+	border: 1px solid #cacaca;
+	text-align: center;
+	vertical-align: middle;
+}
+
+#customers th {
+	height: 25px;
+	font-size: 1.0em;
+	background: #efefef;
+	font-weight: bold;
+	color: #000;
+}
+
+#customers tr.alt td {
+	color: #000000;
+	background-color: #EAF2D3;
+}
+
+#addmission td {
+	vertical-align: middle;
+}
+
+#lwfbList td {
+	vertical-align: middle;
+}
+
+#choose {
+	font-family: Microsoft Yahei,PingFang SC, Lantinghei SC, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans;
+	width: 100%;
+	border-collapse: collapse;
+}
+#choose td {
+	height: 30px;
+	vertical-align: middle;
+	/* background:#f1f1f1;
+	border:1px solid #cacaca;
+	font-size: 1em;
+	padding-left: 10px; */
+}
+
+input[type="text"] {
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	background:transparent;
+}
+
+#preaddMission {
+	font-family: Microsoft Yahei,PingFang SC, Lantinghei SC, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans;
+	width: 100%;
+}
+
+#preaddMission td {
+	font-size: 1em;
+	vertical-align: middle;
+	height: 35px;
+}
+
+#preaddMission tr.alt td {
+	color: #000000;
+	background-color: #EAF2D3;
+}
+
+#preaddMission input[type="text"] {
+	width: 100px;
+	height: 30px;
+	text-align: center;
+	background:transparent;
+}
+
+#yustable {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	width: 100%;
+	border-collapse: collapse;
+}
+
+#yustable td, #yustable th {
+	font-size: 1.0em;
+	border: 1px solid #e3e3e3;
+	text-align: center;
+	vertical-align: middle;
+}
+
+#yustable th {
+	height: 25px;
+	font-size: 1em;
+	background: #efefef;
+	font-weight: bold;
+	color: #000;
+}
+
+#yustable tr.alt td {
+	color: #000000;
+	background-color: #EAF2D3;
+}
+
+
+#uploadFile {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	width: 100%;
+	border-collapse: collapse;
+}
+#uploadFile td {
+	font-size: 1em;
+	text-align:center;
+	border: 1px solid #980f21;
+	padding: 3px 7px 2px 7px;
+}
+#uploadFile tr.alt td {
+	color: #000000;
+	background-color: #EAF2D3;
+}
+
+
+#viewMission {
+	font-family: Microsoft Yahei,PingFang SC, Lantinghei SC, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans;
+	width: 100%;
+	border: 1px solid black;
+}
+
+#viewMission td, #viewMission th {
+	height: 22px;
+	border: 1px solid black;
+	text-align: center;
+	vertical-align: middle;
+}
+
+#jj_mission {
+	margin-top: -17px;
+	border: 1px solid #cacaca;
+}
+#jj_mission td {
+	border: 1px solid #cacaca;
+	text-align: center;
+}
+/* #jj_mission {
+	font-family: Microsoft Yahei,PingFang SC, Lantinghei SC, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans;
+	width: 100%;
+	border: 1px solid #cacaca;
+}
+
+#jj_mission td, #jj_mission th {
+	border: 1px solid #cacaca;
+	text-align: center;
+	vertical-align: middle;
+	color: #000;
+}
+#jj_mission th {
+	font-weight: bold;
+	font-size: 1.0em;
+	color: #000;
+} */
+#plMission {
+	margin-top: -17px;
+	width: 100%
+}
+#plMission td, #plMission th {
+	text-align: center;
+	vertical-align: middle;
+}
+#plMission th {
+	font-size: 1.0em;
+	background: #efefef;
+	font-weight: bold;
+	color: #000;
+}
+
+#lwgzzf td {
+	text-align: center;
+}
+#lwfbhz td {
+	text-align: center;
+}
+#lwgzzfhz td {
+	text-align: center;
+}
+#lwfbjs td {
+	text-align: center;
+}
+#lwgcldb td {
+	text-align: center;
+}
+#lwgzzf td {
+	text-align: center;
+}

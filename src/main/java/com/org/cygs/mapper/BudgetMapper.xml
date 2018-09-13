@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.BudgetDao" >    
+    <resultMap id="Budget" type="com.org.cygs.pojo.Budget">  
+        <result column="B_ID" property="bId" jdbcType="VARCHAR" />
+        <result column="PR_ID" property="prId" jdbcType="VARCHAR" />
+        <result column="PR_NAME" property="prName" jdbcType="VARCHAR" />  
+        <result column="PC_P_ID" property="pcPId" jdbcType="VARCHAR" />  
+        <result column="UNIT_NUMBER" property="unitNumber" jdbcType="VARCHAR" />
+        <result column="P_ID" property="pId" jdbcType="VARCHAR" />  
+        <result column="P_NAME" property="pName" jdbcType="VARCHAR" />
+        <result column="UN_ID" property="unId" jdbcType="VARCHAR" />  
+        <result column="UN_NAME" property="unName" jdbcType="VARCHAR" />
+        <result column="BUDGET_POS" property="budgetPos" jdbcType="VARCHAR" />  
+        <result column="BUDGET_NAME" property="budgetName" jdbcType="VARCHAR" />  
+        <result column="BUDGET_ACCOUNT" property="budgetAccount" jdbcType="NUMERIC" />  
+        <result column="U_ID" property="uId" jdbcType="VARCHAR" />    
+        <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+        <result column="BUDGET_TIME" property="budgetTime" jdbcType="TIMESTAMP" /> 
+        <result column="REMARK" property="remark" jdbcType="VARCHAR" />          
+    </resultMap>  
+    
+  <sql id="Column_List">
+    PR_ID,PC_P_ID,P_ID,UN_ID,BUDGET_POS,BUDGET_NAME,BUDGET_ACCOUNT,U_ID,BUDGET_TIME,REMARK
+  </sql>
+  
+  <sql id="Select_Column_List">
+      b.[B_ID],pr.[PR_ID],pr.[PR_NAME],pcp.[PC_P_ID],pcp.[UNIT_NUMBER],p.[P_ID],p.[P_NAME],
+      un.[UN_ID],un.[UN_NAME],b.[BUDGET_POS],b.[BUDGET_NAME],
+      b.[BUDGET_ACCOUNT],u.[U_ID],u.[USER_NAME],b.[BUDGET_TIME],b.[REMARK]
+  </sql>
+  
+  <sql id="Table_List">
+     [dbo].[BUDGET] b,[dbo].[PROJECT] pr,[dbo].[PR_INDEX_PC] pcp,[dbo].[PART] p,
+     [dbo].[UNIT] un,[dbo].[USER_TABLE] u
+  </sql>
+  
+  <sql id="Link_List">
+      b.[PR_ID]=pr.[PR_ID] and b.[PC_P_ID]=pcp.[PC_P_ID] and b.[P_ID]=p.[P_ID] and
+      b.[UN_ID]=un.[UN_ID] and b.[U_ID]=u.[U_ID] 
+  </sql>
+  
+  <sql id="Option_List">
+     <if test="bId !=null and bId !=''">and b.[B_ID]=#{bId}</if>
+     <if test="prId !=null and prId !=''">and pr.[PR_ID]=#{prId}</if>
+     <if test="pcPId !=null and pcPId !=''">and pcp.[PC_P_ID]=#{pcPId}</if>
+     <if test="pId !=null and pId !=''">and p.[P_ID]=#{pId}</if>
+     <if test="pName !=null and pName !=''">and p.[P_NAME]=#{pName}</if>
+  </sql>
+  
+  <insert id="addBudget" parameterType="com.org.cygs.pojo.Budget" >
+    insert into [dbo].[BUDGET](<include refid="Column_List"></include>)
+    values (#{prId},#{pcPId},#{pId},#{unId},#{budgetPos},#{budgetName},#{budgetAccount},#{uId},#{budgetTime},#{remark})
+  </insert>
+   
+   
+  <insert id="addBudgetTest" parameterType="com.org.cygs.pojo.Budget" >
+    insert into [dbo].[BUDGET](<include refid="Column_List"></include>)
+    values (#{prId},#{pcPId},#{pId},#{unId},#{budgetPos},#{budgetName},#{budgetAccount},#{uId},#{budgetTime},#{remark})
+  </insert>
+  
+  
+   <select id="selectBudget" parameterType="java.lang.String" resultMap="Budget">
+   select <include refid="Select_Column_List"></include>
+   from <include refid="Table_List"></include>
+  <where>
+     <include refid="Link_List"></include>
+     and [B_ID]=#{_parameter}
+   </where>   
+   </select> 
+    
+   <select id="selectBudgetList" parameterType="com.org.cygs.pojo.Budget" resultMap="Budget">
+   select <include refid="Select_Column_List"></include>
+   from <include refid="Table_List"></include>
+  <where>
+     <include refid="Link_List"></include>
+     <include refid="Option_List"></include>
+  </where>  
+   </select>
+   
+         
+    <!-- 批量删除预算 -->  
+    <delete id="deleteBudgetByBatch" parameterType="java.lang.String" >  
+     delete from [dbo].[BUDGET]  
+     where [B_ID] IN   
+         <foreach item="ids" collection="array" open="(" separator="," close=")">  
+             #{ids,jdbcType=VARCHAR}  
+         </foreach>     
+    </delete>  
+  
+    <!-- 更新预算信息-->  
+    <update id="updateBudget" parameterType="com.org.cygs.pojo.Budget" >    
+        update [dbo].[BUDGET]    
+        <set >    
+          <if test="budgetPos != null and budgetPos !=''" >    
+            [BUDGET_POS] = #{budgetPos,jdbcType=VARCHAR},    
+          </if>
+          <if test="budgetName != null and budgetName !=''" >    
+            [BUDGET_NAME] = #{budgetName,jdbcType=VARCHAR},    
+          </if>
+          <if test="budgetAccount != null and budgetAccount !=''" >    
+            [BUDGET_ACCOUNT] = #{budgetAccount},    
+          </if>
+          <if test="budgetTime != null and budgetTime !=''" >    
+            [BUDGET_TIME] = #{budgetTime},    
+          </if>    
+         <if test="remark != null and remark !=''"  >    
+            [REMARK] = #{remark,jdbcType=VARCHAR},    
+          </if>   
+        </set> 
+        where [B_ID]=#{bId}   
+    </update>
+    
+  <select id="getNewBudget"  resultMap="Budget">
+   select top 1 * from BUDGET
+   order by B_ID desc    
+   </select> 
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.StopAuditDao" >    
+    <resultMap id="BaseResultMap" type="com.org.cygs.pojo.StopAudit">  
+        <result column="SA_ID" property="saId" jdbcType="VARCHAR" />  
+        <result column="M_ID" property="mId" jdbcType="VARCHAR" /> 
+        <result column="U_ID" property="uId" jdbcType="VARCHAR" />  
+        <result column="REMARK" property="remark" jdbcType="VARCHAR" />    
+    </resultMap> 
+    
+    
+    <!-- 删除暂不处理任务书-->  
+    <delete id="deleteStopAudit" parameterType="java.lang.String" >  
+     delete from [dbo].[STOP_AUDIT]  
+     where M_ID = #{0} and U_ID = #{1}
+    </delete>
+    
+    <!-- 删除暂不处理任务书-->  
+    <delete id="deleteStopAuditByMid" parameterType="java.lang.String" >  
+     delete from [dbo].[STOP_AUDIT]  
+     where M_ID = #{0}
+    </delete>
+    
+    <!-- 插入用户 -->  
+    <insert id="addStopAudit" parameterType="com.org.cygs.pojo.StopAudit">  
+        insert into [dbo].[STOP_AUDIT]
+        <trim prefix="(" suffix=")" suffixOverrides="," >    
+          <if test="mId != null" >    
+            M_ID,    
+          </if>    
+          <if test="uId != null" >    
+            U_ID,    
+          </if>
+          <if test="roId != null" >    
+            RO_ID,    
+          </if>    
+          <if test="remark != null" >    
+            REMARK,
+          </if>    
+        </trim>    
+        <trim prefix="values (" suffix=")" suffixOverrides="," >    
+          <if test="mId != null" >    
+            #{mId,jdbcType=VARCHAR},    
+          </if>    
+          <if test="uId != null" >    
+            #{uId,jdbcType=VARCHAR},    
+          </if>
+          <if test="roId != null" >    
+            #{roId,jdbcType=VARCHAR},    
+          </if>     
+          <if test="remark != null" >    
+            #{remark,jdbcType=VARCHAR},    
+          </if>   
+        </trim>     
+    </insert> 
+    
+</mapper>

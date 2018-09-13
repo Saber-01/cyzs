@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.MissionTypeDao">
+<resultMap type="com.org.cygs.pojo.MissionType" id="mission_type">
+	<result column="MT_ID" property="mtId" jdbcType="VARCHAR"/>
+	<result column="MT_CODE" property="mtCode" jdbcType="INTEGER"/>
+	<result column="MT_NAME" property="mtName" jdbcType="VARCHAR"/>
+</resultMap>
+<!-- 修改任务书类型 -->
+	<update id="missionEdit" parameterType="com.org.cygs.pojo.MissionType">
+		update [dbo].[MISSION_TYPE]
+		<set>    
+          <if test="mtName != null and mtName != ''" >    
+            MT_NAME = #{mtName,jdbcType=VARCHAR},    
+          </if>      
+        </set>    
+        where MT_ID = #{mtId,jdbcType=VARCHAR}  
+	</update>
+<!-- 删除任务书类型 -->
+	<delete id="missionDelete" parameterType="java.lang.String">
+		delete from [dbo].[MISSION_TYPE]
+			where MT_ID=#{mtId,jdbcType=VARCHAR}
+	</delete>
+<!-- 获取任务书类型 -->
+	<select id="getMissionType" resultMap="mission_type">
+		select * from 
+		[dbo].[MISSION_TYPE]
+		 order by [MT_ID] asc
+	</select>
+<!-- 通过id获取任务书类型信息 -->
+	<select id="getMissionTypeById" parameterType="java.lang.String" resultMap="mission_type">
+		select * from
+			[dbo].[MISSION_TYPE]
+			where MT_ID=#{mtId,jdbcType=VARCHAR}
+	</select>
+	
+	
+	<!-- 通过name获取任务书类型id -->
+	<select id="getMissionTypeByName" parameterType="java.lang.String" resultMap="mission_type">
+		select * from
+			[dbo].[MISSION_TYPE]
+			where MT_NAME=#{mtName,jdbcType=VARCHAR}
+	</select>
+	
+	
+<!-- 判断是否有重复的任务书类型 -->
+	<select id="judgeMissionType" parameterType="com.org.cygs.pojo.MissionType" resultMap="mission_type">
+		select * from 
+			[dbo].[MISSION_TYPE]
+		<where>
+			<if test="mtCode != null and mtCode != ''">
+				MT_CODE = #{mtCode,jdbcType=INTEGER}
+			</if>
+			<if test="mtName != null and mtCode != ''">
+				or MT_NAME = #{mtName,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select> 
+
+    <!-- 获取任务书类型列表-->  
+    <select id="getMissionTypeList" parameterType="java.util.Map" resultMap="mission_type">  
+        select * from [dbo].[MISSION_TYPE]
+		<where>
+			<if test="mtId != null and mtId != ''">
+				MT_ID = #{mtId,jdbcType=VARCHAR}
+			</if>
+			<if test="mtCode != null and mtCode != ''">
+				MT_CODE = #{mtCode,jdbcType=INTEGER}
+			</if>
+			<if test="mtName != null and mtCode != ''">
+				or MT_NAME = #{mtName,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by [MT_ID] asc
+    	Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>  
+
+    <!-- 根据条件筛选任务书类型列表-->  
+    <select id="getMissionTypeCount" parameterType="java.util.Map" resultType="java.lang.Integer">  
+        select count(*) from [dbo].[MISSION_TYPE]
+		<where>
+			<if test="mtId != null and mtId != ''">
+				MT_ID = #{mtId,jdbcType=VARCHAR}
+			</if>
+			<if test="mtCode != null and mtCode != ''">
+				MT_CODE = #{mtCode,jdbcType=INTEGER}
+			</if>
+			<if test="mtName != null and mtCode != ''">
+				or MT_NAME = #{mtName,jdbcType=VARCHAR}
+			</if>
+		</where>
+    </select>  
+    
+
+<!-- 添加任务书 -->
+	<insert id="missionAdd" parameterType="com.org.cygs.pojo.MissionType">
+		insert into [dbo].[MISSION_TYPE](MT_CODE,MT_NAME)
+		values(#{mtCode},#{mtName})
+			
+	</insert>
+</mapper>

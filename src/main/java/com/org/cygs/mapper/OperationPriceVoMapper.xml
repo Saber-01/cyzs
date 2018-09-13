@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.OperationPriceDao" >
+	<resultMap id="OperationPriceMap" type="com.org.cygs.pojo.OperationPriceVo">
+		<id column="OP_ID" property="opId" jdbcType="VARCHAR" />
+    	<result column="PRICE" property="price" jdbcType="DOUBLE" />
+    	<result column="ISBUDGET" property="isbudget" jdbcType="INTEGER" />
+    	<result column="ACCUMULATE_SUM" property="accumulateSum" jdbcType="DECIMAL" />
+    	<result column="BUDGET_SUM" property="budgetSum" jdbcType="DECIMAL" />
+    	<result column="B_ID" property="bId" jdbcType="VARCHAR"/>
+		
+		<result column="CU_ID" property="cuId" jdbcType="VARCHAR" /> 
+        <result column="CU_NAME" property="cuName" jdbcType="VARCHAR" />    
+		
+		<result column="PR_ID" property="prId" jdbcType="VARCHAR" />
+        <result column="PR_NAME" property="prName" jdbcType="VARCHAR" />  
+		
+		<result column="O_ID" property="oId" jdbcType="VARCHAR" />
+		<result column="O_NAME" property="oName" jdbcType="VARCHAR" />
+		
+		<result column="PC_P_ID" property="pcPId" jdbcType="VARCHAR" />
+    	<result column="UNIT_NUMBER" property="unitNumber" jdbcType="VARCHAR" />
+    	
+    	<result column="PS_ID" property="psId" jdbcType="VARCHAR" />  
+        <result column="PS_NAME" property="psName" jdbcType="VARCHAR" />  
+        
+        <result column="P_ID" property="pId" jdbcType="VARCHAR" /> 
+        <result column="P_NAME" property="pName" jdbcType="VARCHAR" /> 
+        
+        <result column="UN_ID" property="unId" jdbcType="VARCHAR" /> 
+    	<result column="UN_NAME" property="unName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap type="com.org.cygs.pojo.YklHistory" id="ykl_history">
+		<id column="YKL_ID" property="yklId" />
+		<result column="OP_ID" property="opId" jdbcType="VARCHAR" />
+		<result column="PRICE" property="price"/>
+		<result column="ISBUDGET" property="isBudget"/>
+		<result column="BUDGET_SUM" property="budgetSum"/>
+		<result column="ACCUMULATE_SUM" property="accumulateSum"/>
+		<result column="MENDER" property="mender"/>
+		<result column="AUDIT_TIME" property="auditTime" jdbcType="TIMESTAMP"/>
+		<result column="CU_ID" property="cuId" jdbcType="VARCHAR" /> 
+        <result column="CU_NAME" property="cuName" jdbcType="VARCHAR" />    
+		
+		<result column="PR_ID" property="prId" jdbcType="VARCHAR" />
+        <result column="PR_NAME" property="prName" jdbcType="VARCHAR" />  
+		
+		<result column="O_ID" property="oId" jdbcType="VARCHAR" />
+		<result column="O_NAME" property="oName" jdbcType="VARCHAR" />
+		
+		<result column="PC_P_ID" property="pcPId" jdbcType="VARCHAR" />
+    	<result column="UNIT_NUMBER" property="unitNumber" jdbcType="VARCHAR" />
+    	
+    	<result column="PS_ID" property="psId" jdbcType="VARCHAR" />  
+        <result column="PS_NAME" property="psName" jdbcType="VARCHAR" />  
+        
+        <result column="P_ID" property="pId" jdbcType="VARCHAR" /> 
+        <result column="P_NAME" property="pName" jdbcType="VARCHAR" /> 
+        
+        <result column="UN_ID" property="unId" jdbcType="VARCHAR" /> 
+    	<result column="UN_NAME" property="unName" jdbcType="VARCHAR" />
+    	
+    	<result column="B_ID" property="bId" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<sql id="Table_List">  
+	[dbo].[OPERATION_PRICE] op, [dbo].[OPERATION] o, [dbo].[UNIT] un, [dbo].[PROJECT] p, [dbo].[PART_POSITION] pp, 
+	[dbo].[PR_INDEX_PC] prpc, [dbo].[CHECK_UNIT] cu, [dbo].[PART] pa
+	</sql>
+
+	<sql id="Column_List">
+	op.OP_ID, op.PRICE, op.ACCUMULATE_SUM, op.BUDGET_SUM, p.PR_ID, p.PR_NAME, pa.P_ID, pa.P_NAME, pp.PS_ID, pp.PS_NAME, 
+	o.O_ID, o.O_NAME, prpc.PC_P_ID, prpc.UNIT_NUMBER, un.UN_ID, un.UN_NAME, cu.CU_ID, cu.CU_NAME
+	</sql>
+
+	<sql id="Condition_List">
+	op.O_ID=o.O_ID and un.UN_ID=op.UN_ID and op.PR_ID=p.PR_ID and op.PS_ID=pp.PS_ID and 
+	prpc.PC_P_ID=op.PC_P_ID and op.CU_ID=cu.CU_ID and pa.P_ID=pp.P_ID
+	<!-- and pa.PR_ID=op.PR_ID and pa.PC_P_ID=op.PC_P_ID and pa.CU_ID=op.CU_ID -->
+	</sql>
+  
+  
+  
+  <select id="selectAllByOpid" parameterType="java.lang.String" resultMap="OperationPriceMap">
+    select distinct <include refid="Column_List" />
+	from <include refid="Table_List" />
+	where <include refid="Condition_List" /> and op.OP_ID = #{0}
+		
+  </select>
+  <!-- 根据prId cuId pcpId 查询单价 -->
+  <select id="selectOperationPrice" resultMap="OperationPriceMap" parameterType="java.lang.String" >
+	select distinct <include refid="Column_List" />
+	from <include refid="Table_List" />
+	where <include refid="Condition_List" />
+	and p.PR_ID=#{0} and cu.CU_ID=#{1} and prpc.PC_P_ID=#{2}
+  </select>
+  
+  <!-- 新建任务书....查单价的一种方法....Operation里面没有UN_ID字段 -->
+  <!-- <select id="queryUnitInfoByOid" resultMap="OperationPriceMap" parameterType="java.lang.String" >
+	select distinct u.UN_ID, u.UN_NAME, op.O_ID, op.PRICE from UNIT u, OPERATION_PRICE op
+		where op.UN_ID=u.UN_ID and op.O_ID=#{0}
+  </select>
+  新建任务书....查单价的一种方法....Operation里面有UN_ID字段
+  <select id="selectUnitPriceByOid" resultMap="OperationPriceMap" parameterType="java.lang.String" >
+	select distinct op.PRICE from OPERATION_PRICE op, OPERATION o
+	where op.O_ID=o.O_ID and op.UN_ID=o.UN_ID and o.O_ID=#{0}
+  </select> -->
+  
+  <!-- <select id="queryOperationPriceUnit" resultMap="OperationPriceMap" parameterType="java.lang.String" >
+	select distinct u.UN_ID, u.UN_NAME, op.PRICE from OPERATION_PRICE op, UNIT u
+	where op.PS_ID=#{0} and op.O_ID=#{1} and op.UN_ID=u.UN_ID
+  </select> -->
+  <!--  -->
+  <select id="queryOperationPriceUnit" resultMap="OperationPriceMap" parameterType="java.lang.String" >
+	select distinct u.UN_ID, u.UN_NAME, op.PRICE
+	from OPERATION_PRICE op, UNIT u where op.UN_ID=u.UN_ID and
+		op.PR_ID=#{0}
+		and op.PC_P_ID=#{1}
+ 		and op.P_ID=#{2}
+ 		and op.PS_ID=#{3}
+ 		and op.O_ID=#{4}
+		and op.CU_ID=#{5}
+  </select>
+  
+  <!-- 查询accQuantity(已结量)时....根据7个字段查询单价 -->
+  <select id="queryUnitBySeven" resultMap="OperationPriceMap" parameterType="java.lang.String" >
+	select distinct op.PRICE
+	from <include refid="Table_List" />
+	where op.O_ID=o.O_ID and op.UN_ID=un.UN_ID and op.PR_ID=p.PR_ID and op.PS_ID=pp.PS_ID and 
+		op.PC_P_ID=prpc.PC_P_ID and pp.P_ID=pa.P_ID and op.P_ID=pa.P_ID and
+		op.PR_ID=#{0}
+		and op.PC_P_ID=#{1}
+ 		and pa.P_ID=#{2}
+ 		and op.PS_ID=#{3}
+ 		and op.O_ID=#{4}
+		and op.UN_ID=#{5}
+	<if test="#{6} != null">
+		and op.CU_ID=#{6}
+	</if>
+  </select>
+  
+  
+  <!-- 预控量管理，根据工程号与楼栋号，以及结算单位获得预控量相关信息 -->
+  <select id="getYKL" resultMap="OperationPriceMap" parameterType="java.util.Map">
+  		<!-- select p.[P_NAME],pp.[PS_NAME],o.[O_NAME],un.[UN_NAME],op.*,cu.[CU_NAME]
+  			from [dbo].[PART] p,[dbo].[PART_POSITION] pp,[dbo].[OPERATION] o,[dbo].[UNIT] un,[dbo].[OPERATION_PRICE] op,[dbo].[CHECK_UNIT] cu
+  			<where>
+  				p.[PR_ID] = #{prId} and p.[PC_P_ID] = #{pcPId} and p.[P_ID] = pp.[P_ID] and pp.[PS_ID] = o.[PS_ID] and op.[PS_ID] = pp.[PS_ID]
+  					and o.[O_ID] = op.[O_ID] and op.[UN_ID] = un.[UN_ID] and op.[CU_ID] = cu.[CU_ID]
+  				<if test="cuId != null and cuId != ''">
+  					and cu.[CU_ID] = #{cuId}
+  				</if>
+  			</where> -->
+  	select p.[P_NAME],pp.[PS_NAME],o.[O_NAME],un.[UN_NAME],op.*,cu.[CU_NAME]
+  	from [dbo].[PART] p,[dbo].[PART_POSITION] pp,[dbo].[OPERATION] o,[dbo].[UNIT] un,[dbo].[OPERATION_PRICE] op,[dbo].[CHECK_UNIT] cu
+  		<where>
+  			op.[PR_ID] = #{prId} and op.[PC_P_ID] = #{pcPId}
+			and p.[P_ID] = pp.[P_ID] and pp.[PS_ID] = o.[PS_ID] 
+			and op.[PS_ID] = pp.[PS_ID] and op.P_ID=p.P_ID and op.PS_ID=pp.PS_ID
+			and o.[O_ID] = op.[O_ID] and op.[UN_ID] = un.[UN_ID] and op.[CU_ID] = cu.[CU_ID]
+  		<if test="cuId != null and cuId != ''">
+  			and cu.[CU_ID] = #{cuId}
+  		</if>
+  		</where>
+  </select>
+	
+	<!-- 预控量管理，根据工程、楼栋号以及结算单位获取预控量数目 -->
+	<select id="getYKLCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(*)
+			from [dbo].[PART] p,[dbo].[PART_POSITION] pp,[dbo].[OPERATION] o,[dbo].[UNIT] un,[dbo].[OPERATION_PRICE] op,[dbo].[CHECK_UNIT] cu
+  			<where>
+  			op.[PR_ID] = #{prId} and op.[PC_P_ID] = #{pcPId}
+			and p.[P_ID] = pp.[P_ID] and pp.[PS_ID] = o.[PS_ID] 
+			and op.[PS_ID] = pp.[PS_ID] and op.P_ID=p.P_ID and op.PS_ID=pp.PS_ID
+			and o.[O_ID] = op.[O_ID] and op.[UN_ID] = un.[UN_ID] and op.[CU_ID] = cu.[CU_ID]
+  				<if test="cuId != null and cuId != ''">
+  					and cu.[CU_ID] = #{cuId}
+  				</if>
+  			</where>
+	</select>
+	
+	<!-- 修改预控量 -->
+	<update id="editBudgetSum" parameterType="java.util.Map">
+		update [dbo].[OPERATION_PRICE]
+		<set>
+			[BUDGET_SUM] = #{budgetSum}
+		</set>
+		where [OP_ID] = #{opId}
+	</update>
+	<!-- 根据opId获取OperationPriceVo -->
+	<select id="getOperationPriceVoByKey" resultMap="OperationPriceMap" parameterType="java.lang.String">
+		select pr.[PR_ID],pr.[PR_NAME],p.[P_ID],p.[P_NAME],pp.[PS_ID],pp.[PS_NAME],o.[O_ID],o.[O_NAME],cu.[CU_ID],cu.[CU_NAME],un.[UN_ID],un.[UN_NAME],op.*,pip.[PC_P_ID],pip.[UNIT_NUMBER]
+			from [dbo].[PROJECT] pr,[dbo].[PART] p,[dbo].[PART_POSITION] pp,[dbo].[OPERATION] o,[dbo].[CHECK_UNIT] cu,[dbo].[UNIT] un,[dbo].[OPERATION_PRICE] op,[dbo].[PR_INDEX_PC] pip
+			where op.[OP_ID] = #{opId} and pr.[PR_ID] = op.[PR_ID] and pip.[PC_P_ID] = op.[PC_P_ID] and cu.[CU_ID] = op.[CU_ID] and op.[O_ID] = o.[O_ID] 
+				and op.[PS_ID] = pp.[PS_ID] and op.[UN_ID] = un.[UN_ID] and p.[P_ID] = pp.[P_ID]
+	</select>
+	
+	<!-- 根据工程、楼栋号与结算单位获取所有的修改记录 -->
+	<select id="getYklHistory" parameterType="java.util.Map" resultMap="ykl_history">
+		select ykl.*,pr.[PR_NAME],pip.[UNIT_NUMBER],o.[O_NAME],cu.[CU_NAME],p.[P_NAME],un.[UN_NAME],pp.[PS_NAME]
+		
+			from [dbo].[YKL_HISTORY] ykl,[dbo].[PROJECT] pr,[dbo].[PART] p,[dbo].[PART_POSITION] pp,[dbo].[CHECK_UNIT] cu,[dbo].[UNIT] un,[dbo].[PR_INDEX_PC] pip,[dbo].[OPERATION] o
+		<where>
+			ykl.[PR_ID] = pr.[PR_ID] and ykl.[CU_ID] = cu.[CU_ID] and ykl.[PC_P_ID] = pip.[PC_P_ID] and ykl.[PS_ID] = pp.[PS_ID] and ykl.[UN_ID] = un.[UN_ID] and ykl.[O_ID] = o.[O_ID] and p.[P_ID] = pp.[P_ID]
+			<if test="prId != null and prId != ''">
+				and ykl.[PR_ID] = #{prId}
+			</if>
+			<if test="cuId != null and cuId != ''">
+				and ykl.[CU_ID] = #{cuId}
+			</if>
+			<if test="pcPId != null and pcPId != ''">
+				and ykl.[PC_P_ID] = #{pcPId}
+			</if>
+		</where>
+		order by ykl.[YKL_ID]
+		Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+	</select>
+	
+	<!-- 插入预控量修改记录 -->
+	<insert id="addYKLmendRecord" parameterType="com.org.cygs.pojo.YklHistory">
+		insert into [dbo].[YKL_HISTORY](OP_ID,O_ID,UN_ID,PRICE,PR_ID,PS_ID,PC_P_ID,CU_ID,ISBUDGET,B_ID,ACCUMULATE_SUM,BUDGET_SUM,MENDER,AUDIT_TIME,PT_ID)
+			values(#{opId},#{oId},#{unId},#{price},#{prId},#{psId},#{pcPId},#{cuId},#{isBudget},#{bId},
+		#{accumulateSum},#{budgetSum},#{mender},#{auditTime},#{pName})
+	</insert>
+	
+	<!-- 获取预控量修改记录条目数 -->
+	<select id="getYKLHistoryCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*)
+			from [dbo].[YKL_HISTORY] ykl,[dbo].[PROJECT] pr,[dbo].[PART] p,[dbo].[PART_POSITION] pp,[dbo].[CHECK_UNIT] cu,[dbo].[UNIT] un,[dbo].[PR_INDEX_PC] pip,[dbo].[OPERATION] o
+		<where>
+			ykl.[PR_ID] = pr.[PR_ID] and ykl.[CU_ID] = cu.[CU_ID] and ykl.[PC_P_ID] = pip.[PC_P_ID] and ykl.[PS_ID] = pp.[PS_ID] and ykl.[UN_ID] = un.[UN_ID] and ykl.[O_ID] = o.[O_ID] and p.[P_ID] = pp.[P_ID]
+			<if test="prId != null and prId != ''">
+				and ykl.[PR_ID] = #{prId}
+			</if>
+			<if test="cuId != null and cuId != ''">
+				and ykl.[CU_ID] = #{cuId}
+			</if>
+			<if test="pcPId != null and pcPId != ''">
+				and ykl.[PC_P_ID] = #{pcPId}
+			</if>
+		</where>
+	</select>
+	
+	
+	<!-- 获取每个分项3对应的已开工程量 -->
+	<select id="getYkgcl" parameterType="com.org.cygs.pojo.OperationPriceVo" resultType="java.lang.Double">
+		select sum(mc.[REAL_QUANTITY])
+			from [dbo].[MISSION_CONTENT] mc,[dbo].[MISSION] m,[dbo].[MISSION_TYPE] mt
+			where mc.[O_ID] = #{oId} and mc.[M_ID] = m.[M_ID] and m.[PR_ID] = #{prId} and m.[PC_P_ID] = #{pcPId} and m.[CU_ID] = #{cuId} and m.[MT_ID] = mt.[MT_ID] and mt.[MT_NAME] = '计件任务书'
+	</select>
+</mapper>

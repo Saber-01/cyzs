@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.MissionDeleteContentDao" >
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.MissionDeleteContent" >
+    <id column="MCD_ID" property="mcdId" jdbcType="VARCHAR" />
+    <result column="MD_ID" property="mdId" jdbcType="VARCHAR" />
+    <association property="missionContent" column="missionContent" javaType="com.org.cygs.pojo.MissionContent"></association>
+  </resultMap>
+ 
+  <insert id="insertMissionDeleteContent" parameterType="com.org.cygs.pojo.MissionDeleteContent" >
+    insert into MISSION_DELETE_CONTENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="mcdId != null" >
+        MCD_ID,
+      </if>
+      <if test="missionContent.mcId != null" >
+        MC_ID,
+      </if>
+      <if test="missionContent.mcCode != null" >
+        MC_CODE,
+      </if>
+      <if test="missionContent.price != null" >
+        PRICE,
+      </if>
+      <if test="missionContent.realQuantity != null" >
+        REAL_QUANTITY,
+      </if>
+      <if test="missionContent.wageSum != null" >
+        WAGE_SUM,
+      </if>
+      <if test="missionContent.accumulateSum != null" >
+        ACCUMULATE_SUM,
+      </if>
+      <if test="missionContent.floor != null" >
+        FLOOR,
+      </if>
+      <if test="missionContent.oId != null" >
+        O_ID,
+      </if>
+      <if test="missionContent.unId != null" >
+        UN_ID,
+      </if>
+      <if test="missionContent.remark != null" >
+        REMARK,
+      </if>
+      <if test="mdId != null" >
+        MD_ID,
+      </if>
+      <if test="missionContent.mId != null" >
+        M_ID,
+      </if>
+      <if test="missionContent.psId != null" >
+        PS_ID,
+      </if>
+      <if test="missionContent.pId != null" >
+        P_ID,
+      </if>
+      <if test="missionContent.partPos != null" >
+        PART_POS,
+      </if>
+      <if test="missionContent.partItemone != null" >
+        PART_ITEMONE,
+      </if>
+      <if test="missionContent.partItemtwo != null" >
+        PART_ITEMTWO,
+      </if>
+      <if test="missionContent.partItemthree != null" >
+        PART_ITEMTHREE,
+      </if>
+      <if test="missionContent.isreturn != null" >
+        ISRETURN,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="mcdId != null" >
+        #{mcdId,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.mcId != null" >
+        #{missionContent.mcId,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.mcCode != null" >
+        #{missionContent.mcCode,jdbcType=INTEGER},
+      </if>
+      <if test="missionContent.price != null" >
+        #{missionContent.price,jdbcType=DECIMAL},
+      </if>
+      <if test="missionContent.realQuantity != null" >
+        #{missionContent.realQuantity,jdbcType=DECIMAL},
+      </if>
+      <if test="missionContent.wageSum != null" >
+        #{missionContent.wageSum,jdbcType=DECIMAL},
+      </if>
+      <if test="missionContent.accumulateSum != null" >
+        #{missionContent.accumulateSum,jdbcType=DECIMAL},
+      </if>
+      <if test="missionContent.floor != null" >
+        #{missionContent.floor,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.oId != null" >
+        #{missionContent.oId,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.unId != null" >
+        #{missionContent.unId,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.remark != null" >
+        #{missionContent.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="mdId != null" >
+        #{mdId,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.mId != null" >
+        #{missionContent.mId,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.psId != null" >
+        #{missionContent.psId,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.pId != null" >
+        #{missionContent.pId,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.partPos != null" >
+        #{missionContent.partPos,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.partItemone != null" >
+        #{missionContent.partItemone,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.partItemtwo != null" >
+        #{missionContent.partItemtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.partItemthree != null" >
+        #{missionContent.partItemthree,jdbcType=VARCHAR},
+      </if>
+      <if test="missionContent.isreturn != null" >
+        #{missionContent.isreturn,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+ 
+</mapper>

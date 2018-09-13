@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.ZPrIndexPcDao" >
+  <resultMap id="ZPrIndexPcMap" type="com.org.cygs.pojo.ZPrIndexPc" >
+    <id column="Z_PC_P_ID" property="zPcPId" jdbcType="VARCHAR" />
+    <result column="Z_PR_ID" property="zPrId" jdbcType="VARCHAR" />
+    <result column="UNIT_NUMBER" property="unitNumber" jdbcType="VARCHAR" />
+    <result column="U_ID" property="uId" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+      Z_PC_P_ID, Z_PR_ID, UNIT_NUMBER, U_ID
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="ZPrIndexPcMap" parameterType="java.lang.String" >
+    select 
+    Z_PC_P_ID,Z_PR_ID,UNIT_NUMBER,U_ID
+    from Z_PR_INDEX_PC
+    where Z_PC_P_ID = #{zPcPId,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 查询栋号 -->
+  <select id="selectUnitNumberByZprId" resultMap="ZPrIndexPcMap" parameterType="java.lang.String" >
+    select 
+    Z_PC_P_ID,UNIT_NUMBER
+    from Z_PR_INDEX_PC
+    where Z_PR_ID = #{zPrId,jdbcType=VARCHAR}
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from Z_PR_INDEX_PC
+    where Z_PC_P_ID = #{zPcPId,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="insertSelective" parameterType="com.org.cygs.pojo.ZPrIndexPc" >
+    insert into Z_PR_INDEX_PC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="zPcPId != null" >
+        Z_PC_P_ID,
+      </if>
+      <if test="zPrId != null" >
+        Z_PR_ID,
+      </if>
+      <if test="unitNumber != null" >
+        UNIT_NUMBER,
+      </if>
+      <if test="uId != null" >
+        U_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="zPcPId != null" >
+        #{zPcPId,jdbcType=VARCHAR},
+      </if>
+      <if test="zPrId != null" >
+        #{zPrId,jdbcType=VARCHAR},
+      </if>
+      <if test="unitNumber != null" >
+        #{unitNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="uId != null" >
+        #{uId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+</mapper>

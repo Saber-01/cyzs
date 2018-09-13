@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.InPrIndexPcDao" >
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.InPrIndexPc" >
+    <id column="IN_PC_P_ID" property="inPcPId" jdbcType="VARCHAR" />
+    <result column="IN_PR_ID" property="inPrId" jdbcType="VARCHAR" />
+    <result column="UNIT_NUMBER" property="unitNumber" jdbcType="VARCHAR" />
+    <result column="U_ID" property="uId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+      IN_PC_P_ID, IN_PR_ID, UNIT_NUMBER, U_ID
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    IN_PC_P_ID,IN_PR_ID,UNIT_NUMBER,U_ID
+    from IN_PR_INDEX_PC
+    where IN_PC_P_ID = #{inPcPId,jdbcType=VARCHAR}
+  </select>
+  
+  
+</mapper>

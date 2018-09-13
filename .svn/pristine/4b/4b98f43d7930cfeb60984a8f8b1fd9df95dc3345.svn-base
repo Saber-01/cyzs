@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.ContractDao" >    
+    <resultMap id="BaseResultMap" type="com.org.cygs.pojo.Contract">  
+        <result column="OP_ID" property="opId" jdbcType="VARCHAR" /> 
+        <result column="PRICE" property="price" jdbcType="FLOAT" />   
+        <result column="O_NAME" property="jobName" jdbcType="VARCHAR" /> 
+        <result column="O_ID" property="jobKey" jdbcType="VARCHAR" /> 
+        <result column="UN_NAME" property="unName" jdbcType="VARCHAR" />
+        <result column="UN_ID" property="unId" jdbcType="VARCHAR" />  
+        <result column="PR_NAME" property="prName" jdbcType="VARCHAR" />
+        <result column="PR_ID" property="prId" jdbcType="VARCHAR" />  
+        <result column="PS_NAME" property="psName" jdbcType="VARCHAR" />
+        <result column="PS_ID" property="psId" jdbcType="VARCHAR" />  
+        <result column="UNIT_NUMBER" property="pcpNumber" jdbcType="VARCHAR" />
+        <result column="PC_P_ID" property="pcpId" jdbcType="VARCHAR" />  
+        <result column="CU_NAME" property="cuName" jdbcType="VARCHAR" />
+        <result column="CU_ID" property="cuId" jdbcType="VARCHAR" />  
+        <result column="FS_NAME" property="fsName" jdbcType="VARCHAR" /> 
+        <result column="FS_ID" property="fsId" jdbcType="VARCHAR" />   
+        <result column="P_NAME" property="pName" jdbcType="VARCHAR" /> 
+        <result column="P_ID" property="pId" jdbcType="VARCHAR" />  
+        <result column="B_ID" jdbcType="VARCHAR" property="bId" />
+        <result column="ACCUMULATE_SUM" jdbcType="DECIMAL" property="accumulateSum" />
+        <result column="BUDGET_SUM" jdbcType="DECIMAL" property="budgetSum" />
+        <result column="ISBUDGET" jdbcType="INTEGER" property="isbudget" />
+        <result column="CLASSORNOT" jdbcType="VARCHAR" property="classOrNot" />
+    </resultMap>  
+  
+     <sql id="OP_Column_List">
+      OP_ID, O_ID, UN_ID, PRICE, PR_ID, PS_ID, PC_P_ID, CU_ID, ISBUDGET,  B_ID, ACCUMULATE_SUM, 
+      BUDGET_SUM,P_ID
+     </sql>
+     
+    <sql id="Table_List">  
+        [dbo].[OPERATION_PRICE] a,[dbo].[OPERATION] b,[dbo].[UNIT] c,
+        [dbo].[PROJECT] d,[dbo].[PART_POSITION] e,[dbo].[PR_INDEX_PC] f,
+        [dbo].[CHECK_UNIT] g,[dbo].[PART] i
+
+    </sql>  
+    
+    <sql id="Column_List">
+        a.[OP_ID],a.[PRICE],a.[O_ID],a.[B_ID],a.[ISBUDGET],b.[O_NAME],a.[UN_ID],c.[UN_NAME],
+        a.[PR_ID],d.[PR_NAME],a.[PS_ID],e.[PS_NAME],a.[PC_P_ID],f.[UNIT_NUMBER],a.[CU_ID],
+        g.[CU_NAME],i.[P_ID],i.[P_NAME]
+    </sql>
+  
+    <sql id="CheckOption_List">
+        a.[O_ID]=b.[O_ID] and a.[UN_ID]=c.[UN_ID] and a.[PR_ID]=d.[PR_ID] and 
+        a.[PS_ID]=e.[PS_ID] and a.[PC_P_ID]=f.[PC_P_ID] and 
+        a.[CU_ID]=g.[CU_ID]  and a.[P_ID]=i.[P_ID]
+    </sql>
+    <sql id="Option_List">
+            <if test="opId !=null and opId !=''">
+		     and a.[OP_ID]=#{opId}
+		  </if>
+         <if test="price !=null and price !=''">
+		     and a.[PRICE]=#{price}
+		  </if>
+		  <if test="jobKey !=null and jobKey !=''">
+		     and b.[O_ID]=#{jobKey}
+		  </if>
+		  <if test="jobName !=null and jobName !=''">
+		     and b.[O_NAME]=#{jobName}
+		  </if>
+		  <if test="unName !=null and unName !=''">
+		     and c.[UN_NAME]=#{unName}
+		  </if>
+		  <if test="prId !=null and prId !=''">
+		     and d.[PR_ID]=#{prId}
+		  </if>
+		  <if test="psId !=null and psId !=''">
+		     and e.[PS_ID]=#{psId}
+		  </if>
+		  <if test="psName !=null and psName !=''">
+		     and e.[PS_NAME]=#{psName}
+		  </if>
+		  <if test="pcpId !=null and pcpId !=''">
+		     and f.[PC_P_ID]=#{pcpId}
+		  </if>
+		  <if test="pcpNumber !=null and pcpNumber !=''">
+		     and f.[UNIT_NUMBER]=#{pcpNumber}
+		  </if>
+		  <if test="cuName !=null and cuName !=''">
+		     and g.[CU_NAME]=#{cuName}
+		  </if>
+		 <if test="pId !=null and pId !=''">
+		     and i.[P_ID]=#{pId}
+		  </if>
+		  <if test="pName !=null and pName !=''">
+		     and i.[P_NAME]=#{pName}
+		  </if>
+		  <if test="bId !=null and bId !=''">
+		     and a.[B_ID]=#{bId}
+		  </if>
+		  <if test="classOrNot=='yes'.toString()">
+		     and a.[B_ID] is not NULL
+		  </if>
+		  <if test="classOrNot=='no'.toString()">
+		     and a.[B_ID] is NULL
+		  </if>
+    </sql>
+    <sql id="ViewOfContract">
+            select  
+        <include refid="Column_List" />  
+        from <include refid="Table_List"></include>
+        <where>
+        <include refid="CheckOption_List"></include>
+        <!-- 表对应编号  op,a o,b un,c pr,d  ps,e  pcp,f  cu,g fs,h p,i -->
+        <include refid="Option_List"></include>
+
+		</where>
+        order by [OP_ID] asc  
+        </sql>  
+        
+    <select id="getContractCount" parameterType="java.util.Map" resultType="java.lang.Integer"> 
+        select count(*)
+        from<include refid="Table_List"></include>
+        <where>
+        <include refid="CheckOption_List"></include>
+        <!-- 表对应编号  op,a o,b un,c pr,d  ps,e  pcp,f  cu,g fs,h p,i -->
+        <include refid="Option_List"></include>
+		</where>
+    </select>  
+    
+    <select id="selectContractList" parameterType="java.util.Map" resultMap="BaseResultMap">  
+       <include refid="ViewOfContract"></include>
+       Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+    <!-- 查询合同单价-->  
+    <select id="selectContracts" parameterType="com.org.cygs.pojo.Contract" resultMap="BaseResultMap">  
+       <include refid="ViewOfContract"></include>
+    </select>
+    
+    <!-- 查询预算中的单价 -->
+    <select id="selectContractByBID" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select * from [dbo].[OPERATION_PRICE]          
+        where [B_ID] = #{_Parameter,jdbcType=INTEGER} 
+    </select>
+      
+    <!-- 批量插入用户 -->  
+    <insert id="insertContractByBatch" parameterType="java.util.List" >  
+    insert into [dbo].[OPERATION_PRICE]  
+       (<include refid="OP_Column_List"></include>)  
+    values  
+         <foreach collection="list" item="contract" index="index" separator=",">  
+      (  
+             #{contract.opId,jdbcType=VARCHAR},  
+             #{contract.jobKey,jdbcType=VARCHAR},  
+             #{contract.unId,jdbcType=VARCHAR}, 
+             #{contract.price,jdbcType=FLOAT},
+             #{contract.prId,jdbcType=VARCHAR},
+             #{contract.psId,jdbcType=VARCHAR},    
+             #{contract.pcpId,jdbcType=VARCHAR}, 
+             #{contract.cuId,jdbcType=VARCHAR}, 
+             
+             #{contract.bId,jdbcType=VARCHAR}, 
+             #{contract.accumulateSum,jdbcType=DECIMAL}, 
+             #{contract.budgetSum,jdbcType=DECIMAL}, 
+             #{contract.isbudget,jdbcType=INTEGER}  
+      ) 
+         </foreach>  
+         
+    </insert>  
+  
+
+      
+    <!-- 批量删除用户 -->  
+    <delete id="deleteContractByBatch" parameterType="java.lang.String" >  
+     delete from [dbo].[OPERATION_PRICE]  
+     where [OP_ID] =#{_parameter,jdbcType=VARCHAR}  
+        
+    </delete>  
+  
+    <!-- 更新合同单价-->  
+    <update id="updateContract" parameterType="com.org.cygs.pojo.Contract" >    
+        update [dbo].[OPERATION_PRICE]    
+        <set >    
+          <if test="price != null and price !=''" >    
+            [price] = #{price,jdbcType=VARCHAR},    
+          </if>    
+         <if test="bId != null and bId !=''"  >    
+            [B_ID] = #{bId,jdbcType=VARCHAR},    
+          </if>   
+        </set>    
+        where [OP_ID] = #{opId,jdbcType=INTEGER}   
+    </update>
+    
+    <update id="updateBIdNull" parameterType="java.lang.String">
+    update [dbo].[OPERATION_PRICE]    
+    set [B_ID]=null    
+        where [OP_ID] = #{_Parameter,jdbcType=INTEGER} 
+    </update>
+    
+  
+    
+   <update id="updateBIdNullByBId" parameterType="java.lang.String">
+    update [dbo].[OPERATION_PRICE]    
+    set [B_ID]=null    
+        where [B_ID] = #{_Parameter,jdbcType=INTEGER} 
+    </update>
+    
+     <update id="updateBIdOfPrice" parameterType="java.lang.String">
+    update [dbo].[OPERATION_PRICE]    
+    set [B_ID]=#{bId}    
+        where [OP_ID] = #{opId} 
+    </update>
+    
+     <update id="updateBIdByBID" parameterType="java.lang.String">
+    update [dbo].[OPERATION_PRICE]    
+    set [B_ID]=#{0}    
+        where [B_ID] = #{1} 
+    </update>
+    
+    
+    <insert id="addContract" parameterType="com.org.cygs.pojo.Contract" >  
+    insert into [dbo].[OPERATION_PRICE]  
+       (<include refid="OP_Column_List"></include>)  
+    values  
+      (  
+             #{opId,jdbcType=VARCHAR},  
+             #{jobKey,jdbcType=VARCHAR},  
+             #{unId,jdbcType=VARCHAR}, 
+             #{price,jdbcType=FLOAT},
+             #{prId,jdbcType=VARCHAR},
+             #{psId,jdbcType=VARCHAR},    
+             #{pcpId,jdbcType=VARCHAR}, 
+             #{cuId,jdbcType=VARCHAR}, 
+             #{isbudget,jdbcType=INTEGER},              
+             #{bId,jdbcType=VARCHAR}, 
+             #{accumulateSum,jdbcType=DECIMAL}, 
+             #{budgetSum,jdbcType=DECIMAL},
+             #{pId,jdbcType=INTEGER}              
+      )          
+    </insert>  
+</mapper>  

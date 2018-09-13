@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.ZPartDao" >
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.ZPart" >
+    <id column="Z_P_ID" property="zPId" jdbcType="VARCHAR" />
+    <result column="P_CODE" property="pCode" jdbcType="CHAR" />
+    <result column="P_NAME" property="pName" jdbcType="VARCHAR" />
+    <result column="ISOLDNEW" property="isoldnew" jdbcType="INTEGER" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+      Z_P_ID, P_CODE, P_NAME, ISOLDNEW
+  </sql>
+  
+  
+  <insert id="insertZPart" parameterType="com.org.cygs.pojo.ZPart" >
+    insert into Z_PART
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="zPId != null" >
+        Z_P_ID,
+      </if>
+      <if test="pCode != null" >
+        P_CODE,
+      </if>
+      <if test="pName != null" >
+        P_NAME,
+      </if>
+      <if test="isoldnew != null" >
+        ISOLDNEW,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="zPId != null" >
+        #{zPId,jdbcType=VARCHAR},
+      </if>
+      <if test="pCode != null" >
+        #{pCode,jdbcType=CHAR},
+      </if>
+      <if test="pName != null" >
+        #{pName,jdbcType=VARCHAR},
+      </if>
+      <if test="isoldnew != null" >
+        #{isoldnew,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+</mapper>

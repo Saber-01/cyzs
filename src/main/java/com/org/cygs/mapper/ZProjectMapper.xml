@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.ZProjectDao" >
+  <resultMap id="ZProjectMap" type="com.org.cygs.pojo.ZProject" >
+    <id column="Z_PR_ID" property="zPrId" jdbcType="VARCHAR" />
+    <result column="PR_NAME" property="prName" jdbcType="VARCHAR" />
+    <result column="PR_CODE" property="prCode" jdbcType="CHAR" />
+    <result column="U_ID" property="uId" jdbcType="VARCHAR" />
+    <result column="PR_TIME" property="prTime" jdbcType="TIMESTAMP" />
+    <result column="PR_END_TIME" property="prEndTime" jdbcType="TIMESTAMP" />
+    <result column="SHENJI_ID" property="shenjiId" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+      Z_PR_ID, PR_NAME, PR_CODE, U_ID, PR_TIME, PR_END_TIME, SHENJI_ID
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="ZProjectMap" parameterType="java.lang.String" >
+    select 
+    Z_PR_ID,PR_NAME,PR_CODE,U_ID,PR_TIME,PR_END_TIME,SHENJI_ID
+    from Z_PROJECT
+    where Z_PR_ID = #{zPrId,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from Z_PROJECT
+    where Z_PR_ID = #{zPrId,jdbcType=VARCHAR}
+  </delete>
+
+  <select id="selectAllZProject" resultMap="ZProjectMap" parameterType="java.lang.String" >
+    select Z_PR_ID,PR_NAME from Z_PROJECT
+  </select>
+
+
+  <insert id="insertSelective" parameterType="com.org.cygs.pojo.ZProject" >
+    insert into Z_PROJECT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="zPrId != null" >
+        Z_PR_ID,
+      </if>
+      <if test="prName != null" >
+        PR_NAME,
+      </if>
+      <if test="prCode != null" >
+        PR_CODE,
+      </if>
+      <if test="uId != null" >
+        U_ID,
+      </if>
+      <if test="prTime != null" >
+        PR_TIME,
+      </if>
+      <if test="prEndTime != null" >
+        PR_END_TIME,
+      </if>
+      <if test="shenjiId != null" >
+        SHENJI_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="zPrId != null" >
+        #{zPrId,jdbcType=VARCHAR},
+      </if>
+      <if test="prName != null" >
+        #{prName,jdbcType=VARCHAR},
+      </if>
+      <if test="prCode != null" >
+        #{prCode,jdbcType=CHAR},
+      </if>
+      <if test="uId != null" >
+        #{uId,jdbcType=VARCHAR},
+      </if>
+      <if test="prTime != null" >
+        #{prTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="prEndTime != null" >
+        #{prEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="shenjiId != null" >
+        #{shenjiId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+</mapper>

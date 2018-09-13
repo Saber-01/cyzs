@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.OperationDao" >
+	<resultMap id="BaseResultMap" type="com.org.cygs.pojo.Operation">
+		<id column="O_ID" property="oId" jdbcType="VARCHAR" />
+		<result column="O_CODE" property="oCode" jdbcType="CHAR" />
+		<result column="O_NAME" property="oName" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="PS_ID" property="psId" jdbcType="VARCHAR" />
+		<result column="UN_ID" property="unId" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 根据PS_ID查询operation -->
+	<select id="selectOperationByPsId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select distinct o.O_ID,o.O_CODE,o.O_NAME,o.REMARK,o.PS_ID,o.UN_ID
+    from OPERATION o, OPERATION_PRICE op
+    where o.PS_ID=op.PS_ID and o.UN_ID=op.UN_ID and o.PS_ID = #{psId,jdbcType=VARCHAR}
+  </select>
+	
+	<!-- 根据oid获取operation -->
+	<select id="getOperationByOid" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select * from OPERATION
+		where O_ID = #{oId}
+	</select>
+	
+	<!-- <select id="selectProjInfoByOid" parameterType="java.lang.String" resultMap="OperationVoMap">
+    select * from OPERATION o, PART p, PART_POSITION pp, UNIT u
+		where o.PS_ID=pp.PS_ID and o.UN_ID=u.UN_ID and pp.P_ID=p.P_ID
+		and o.O_ID=#{0}
+  	</select>
+  
+  	<select id="selectUnitInfoByOid" parameterType="java.lang.String" resultMap="OperationVoMap">
+    select distinct * from OPERATION o, UNIT u
+	where o.UN_ID=u.UN_ID and o.O_ID=#{0}
+  	</select> -->
+  
+</mapper>

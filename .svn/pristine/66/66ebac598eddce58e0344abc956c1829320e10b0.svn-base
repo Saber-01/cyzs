@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.PrIndexPCDao" >
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.PrIndexPC" >
+    <id column="PC_P_ID" property="pcPId" jdbcType="VARCHAR" />
+    <result column="PC_ID" property="pcId" jdbcType="VARCHAR" />
+    <result column="PR_ID" property="prId" jdbcType="VARCHAR" />
+    <result column="UNIT_NUMBER" property="unitNumber" jdbcType="VARCHAR" />
+    <result column="U_ID" property="uId" jdbcType="VARCHAR" />
+    <result column="BUDGET_SUM" property="budgetSum" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+      PC_P_ID, PC_ID, PR_ID, UNIT_NUMBER, U_ID, BUDGET_SUM
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    PC_P_ID,PC_ID,PR_ID,UNIT_NUMBER,U_ID,BUDGET_SUM
+    from PR_INDEX_PC
+    where PC_P_ID = #{pcPId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectUnitByPrId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select * 
+    from PR_INDEX_PC
+    where PR_ID = #{prId,jdbcType=VARCHAR} order by PC_P_ID
+  </select>
+  
+  <select id="getUnitNumberByPrList" parameterType="java.util.Map" resultMap="BaseResultMap">  
+        select
+        <include refid="Base_Column_List" />
+        from PR_INDEX_PC
+        <where>
+		<if test="projectList !=null and projectList.size() != 0">
+		    and PR_ID in
+		  <foreach collection="projectList" item="Item" index="index" open="(" close=")" separator=",">
+            #{Item.prId}
+          </foreach>
+		</if>
+		</where>
+		order by PR_ID     
+    </select>
+  
+  
+</mapper>

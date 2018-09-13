@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.InCheckUnitPoDao" >
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.InCheckUnit" >
+    <id column="IN_CU_ID" property="inCuId" jdbcType="VARCHAR" />
+    <result column="CU_CODE" property="cuCode" jdbcType="CHAR" />
+    <result column="CU_NAME" property="cuName" jdbcType="VARCHAR" />
+  </resultMap>
+ 
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      IN_CU_ID, CU_CODE, CU_NAME
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  
+  
+  <select id="selectAllInCu" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    IN_CU_ID,CU_CODE,CU_NAME
+    from IN_CHECK_UNIT order by CU_NAME
+  </select>
+  
+  <select id="selectInCuByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    IN_CU_ID,CU_CODE,CU_NAME
+    from IN_CHECK_UNIT where IN_CU_ID=#{inCuId,jdbcType=VARCHAR}
+  </select>
+  
+</mapper>

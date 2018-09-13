@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.PartDao" >    
+    <resultMap id="BaseResultMap" type="com.org.cygs.pojo.Part">  
+        <result column="P_ID" property="pId" jdbcType="VARCHAR" />  
+        <result column="P_CODE" property="partId" jdbcType="CHAR" /> 
+        <result column="P_NAME" property="pName" jdbcType="VARCHAR" /> 
+        <result column="ISOLDNEW" property="isOldNew"  /> 
+        <result column="PR_ID" property="prId" jdbcType="VARCHAR" /> 
+        <result column="PC_P_ID" property="pcpId" jdbcType="VARCHAR" />
+        <result column="CU_ID" property="cuId" jdbcType="VARCHAR" />
+    </resultMap>  
+  
+    <sql id="Part_Column_List">  
+        [P_ID], [P_CODE], [P_NAME]
+    </sql>  
+  
+    <!-- 查询分部-->  
+    <select id="getAllPart" resultMap="BaseResultMap">
+        select distinct 
+        [P_NAME],[P_CODE],[P_ID]
+        from [dbo].[PART]
+      order by[P_ID] asc
+    </select>
+    
+    <select id="getAllOldPart" resultMap="BaseResultMap">
+        select distinct 
+        [P_NAME],[P_CODE],[P_ID]
+        from [dbo].[PART]
+     
+      order by[P_ID] asc
+    </select>
+    <!--通过主键查询分部-->
+     <select id="selectPart" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select 
+        *
+        from [dbo].[PART]
+      where [P_ID]=#{pId}
+    </select>
+    <!-- 通过条件查询分部-->  
+    <select id="getPartList1" parameterType="com.org.cygs.pojo.Part" resultMap="BaseResultMap">  
+        select distinct 
+        [P_NAME],p.[P_ID]
+        from [dbo].[PART] p,[dbo].[OPERATION_PRICE] op
+        where  p.[P_ID]=op.[P_ID] and PR_ID=#{prId}   
+        order by [P_NAME] desc  
+    </select>
+
+	<select id="getPartById" parameterType="java.lang.String" resultType="com.org.cygs.pojo.Part">
+		select * from PART
+		where P_ID = #{pId,jdbcType=VARCHAR}
+    </select>
+
+  	<!-- 通过楼栋号查询分部 -->
+  	<select id="getPartByPcPId" parameterType="java.lang.String" resultMap="BaseResultMap">  		  		
+  		 select distinct 
+        [P_NAME],p.[P_ID]
+        from [dbo].[PART] p,[dbo].[OPERATION_PRICE] op
+        where  p.[P_ID]=op.[P_ID] and PC_P_ID = #{pcPId,jdbcType=VARCHAR}   
+        order by [P_NAME] desc  
+  	</select>
+ 
+   <!-- 查询最新插入的主键 -->
+   <select id="getNewPart"  resultMap="BaseResultMap">
+  		select top 1 * from PART
+  		order by P_ID desc
+  	</select>
+    <!-- 删除分部-->  
+    <delete id="deletePart" parameterType="java.lang.String" >  
+        delete from [dbo].[PART]  
+        where P_ID = #{pId}    
+    </delete>  
+    
+    
+    <select id="getNewPartByPCode"  resultMap="BaseResultMap">
+  		select * from PART where P_CODE = #{0}
+  	</select>
+      
+    <!-- 添加分部 -->
+      <insert id="insertPart" parameterType="com.org.cygs.pojo.Part">  
+        insert into [dbo].[PART]
+        <trim prefix="(" suffix=")" suffixOverrides="," >    
+          <if test="partId != null" >    
+            P_CODE,    
+          </if>    
+          <if test="pName != null" >    
+            P_NAME,    
+          </if>    
+                     
+        </trim>    
+        <trim prefix="values (" suffix=")" suffixOverrides="," >    
+          <if test="partId != null" >    
+            #{partId,jdbcType=CHAR},    
+          </if>    
+          <if test="pName != null" >    
+            #{pName,jdbcType=VARCHAR},    
+          </if>    
+             
+        </trim>     
+    </insert> 
+    
+  
+    <!-- 更新分部信息 -->  
+    <update id="updatePart" parameterType="com.org.cygs.pojo.Part" >    
+        update [dbo].[part]    
+        <set >    
+          <if test="partId != null" >    
+            [P_CODE] = #{partId,jdbcType=VARCHAR},    
+          </if>  
+           <if test="pName != null" >    
+            [P_NAME] = #{pName,jdbcType=VARCHAR},    
+          </if>      
+        </set>    
+        where [P_ID] = #{pId,jdbcType=VARCHAR}   
+    </update>
+    
+       <!-- 根据给定的分部名查询分部详细信息 -->
+    <select id="getPartListByPart" parameterType="com.org.cygs.pojo.Part"  resultMap="BaseResultMap">
+   select *
+   from [dbo].[PART] 
+   <where>         
+		   P_NAME=#{pName}		   
+   </where>  
+   </select>
+   
+       <!-- 查询分部-->  
+    <select id="getPartList" parameterType="java.util.Map"  resultMap="BaseResultMap">
+        select distinct 
+        [P_NAME],[P_CODE],[P_ID]
+        from [dbo].[PART]
+      order by[P_ID] asc
+      Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+    
+        <!-- 得到任务书类型数量-->  
+    <select id="getPartCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select distinct count(*) 
+        from [dbo].[PART]
+    </select>
+      
+</mapper>  

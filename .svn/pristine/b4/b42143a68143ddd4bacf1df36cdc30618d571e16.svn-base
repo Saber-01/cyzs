@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.ZAuditInfoDao" >
+  <resultMap id="ZAuditInfoMap" type="com.org.cygs.pojo.ZAuditInfo" >
+    <id column="Z_A_ID" property="zAId" jdbcType="VARCHAR" />
+    <result column="U_ID" property="uId" jdbcType="VARCHAR" />
+    <result column="Z_M_ID" property="zMId" jdbcType="VARCHAR" />
+    <result column="AUDIT_RESULT" property="auditResult" jdbcType="INTEGER" />
+    <result column="AUDIT_COMMENT" property="auditComment" jdbcType="VARCHAR" />
+    <result column="AUDIT_TIME" property="auditTime" jdbcType="TIMESTAMP" />
+    <result column="AUDIT_ROLE" property="auditRole" jdbcType="VARCHAR" />
+    <result column="AUDIT_PERSONAL" property="auditPersonal" jdbcType="VARCHAR" />
+  </resultMap>
+
+	<select id="getZAuditInfoByMId" resultMap="ZAuditInfoMap" parameterType="java.lang.String" >
+    select * from Z_AUDIT_INFO
+    where Z_M_ID = #{zMId,jdbcType=VARCHAR}
+  </select>
+  
+
+  <insert id="insertSelective" parameterType="com.org.cygs.pojo.ZAuditInfo" >
+    insert into Z_AUDIT_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="zAId != null" >
+        Z_A_ID,
+      </if>
+      <if test="uId != null" >
+        U_ID,
+      </if>
+      <if test="zMId != null" >
+        Z_M_ID,
+      </if>
+      <if test="auditResult != null" >
+        AUDIT_RESULT,
+      </if>
+      <if test="auditComment != null" >
+        AUDIT_COMMENT,
+      </if>
+      <if test="auditTime != null" >
+        AUDIT_TIME,
+      </if>
+      <if test="auditRole != null" >
+        AUDIT_ROLE,
+      </if>
+      <if test="auditPersonal != null" >
+        AUDIT_PERSONAL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="zAId != null" >
+        #{zAId,jdbcType=VARCHAR},
+      </if>
+      <if test="uId != null" >
+        #{uId,jdbcType=VARCHAR},
+      </if>
+      <if test="zMId != null" >
+        #{zMId,jdbcType=VARCHAR},
+      </if>
+      <if test="auditResult != null" >
+        #{auditResult,jdbcType=INTEGER},
+      </if>
+      <if test="auditComment != null" >
+        #{auditComment,jdbcType=VARCHAR},
+      </if>
+      <if test="auditTime != null" >
+        #{auditTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="auditRole != null" >
+        #{auditRole,jdbcType=VARCHAR},
+      </if>
+      <if test="auditPersonal != null" >
+        #{auditPersonal,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+</mapper>

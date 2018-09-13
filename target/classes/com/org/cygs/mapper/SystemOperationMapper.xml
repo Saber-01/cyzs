@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.SystemOperationDao" >
+  <resultMap id="SystemOperationMap" type="com.org.cygs.pojo.SystemOperation" >
+    <id column="SO_ID" property="soId" jdbcType="VARCHAR" />
+    <result column="M_CODE" property="mCode" jdbcType="VARCHAR" />
+    <result column="PR_NAME" property="prName" jdbcType="VARCHAR" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+    <result column="OPERATION_TIME" property="operationTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK1" property="remark1" jdbcType="VARCHAR" />
+    <result column="REMARK2" property="remark2" jdbcType="VARCHAR" />
+    <result column="OPERATION_TYPE" property="operationType" jdbcType="VARCHAR" />
+  </resultMap>
+
+	<!-- 调用存储过程结算工程，并备份数据库 -->
+    <select id="backallmission" parameterType="java.util.Map" statementType="CALLABLE">  
+      {call Backallmission(#{prId})}
+  </select>
+
+	<!-- 备份数据库 -->
+	<select id="backupDatabase" parameterType="java.util.Map" resultMap="SystemOperationMap">
+	<![CDATA[
+        BACKUP DATABASE [cyjz_test] TO  DISK = #{path} WITH  NOINIT ,  NOUNLOAD ,  
+        	NAME = 'cyjz_test 备份',  NOSKIP ,  STATS = 10,  NOFORMAT
+    ]]>
+    </select>
+
+	
+	<!-- 查询工程名称 -->
+	<select id="getSysPrList" resultMap="SystemOperationMap">  
+        select distinct PR_NAME from SYSTEM_OPERATION
+    </select>
+
+
+
+
+	<select id="getSystemOperationList" parameterType="java.util.Map" resultMap="SystemOperationMap">  
+        select * from SYSTEM_OPERATION
+        <where>
+		<if test="mCode !=null and mCode !=''">
+		     and M_CODE =#{mCode}
+		</if>
+		<if test="prName != null and prName != ''">
+		     and PR_NAME = #{prName}
+		</if>
+        </where>
+        order by OPERATION_TIME
+        Offset #{offset} Row Fetch Next #{pageSize} Rows Only
+    </select>
+    
+    <select id="getSystemOperationCount" parameterType="java.util.Map" resultType="java.lang.Integer">  
+        select count(*) from SYSTEM_OPERATION
+        <where>
+		<if test="mCode !=null and mCode !=''">
+		     and M_CODE =#{mCode}
+		</if>
+		<if test="prName != null and prName != ''">
+		     and PR_NAME = #{prName}
+		</if>
+        </where>
+    </select>
+
+  
+  <insert id="insertSysOperation" parameterType="com.org.cygs.pojo.SystemOperation" >
+    insert into SYSTEM_OPERATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="soId != null" >
+        SO_ID,
+      </if>
+      <if test="mCode != null" >
+        M_CODE,
+      </if>
+      <if test="prName != null" >
+        PR_NAME,
+      </if>
+      <if test="userName != null" >
+        USER_NAME,
+      </if>
+      <if test="operationTime != null" >
+        OPERATION_TIME,
+      </if>
+      <if test="remark1 != null" >
+        REMARK1,
+      </if>
+      <if test="remark2 != null" >
+        REMARK2,
+      </if>
+      <if test="operationType != null" >
+        OPERATION_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="soId != null" >
+        #{soId,jdbcType=VARCHAR},
+      </if>
+      <if test="mCode != null" >
+        #{mCode,jdbcType=VARCHAR},
+      </if>
+      <if test="prName != null" >
+        #{prName,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="operationTime != null" >
+        #{operationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark1 != null" >
+        #{remark1,jdbcType=VARCHAR},
+      </if>
+      <if test="remark2 != null" >
+        #{remark2,jdbcType=VARCHAR},
+      </if>
+      <if test="operationType != null" >
+        #{operationType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+
+</mapper>

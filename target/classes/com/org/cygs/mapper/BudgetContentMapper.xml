@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.BudgetContentDao" >    
+    <resultMap id="BudgetContent" type="com.org.cygs.pojo.BudgetContent">  
+        <result column="B_ID" property="bId" jdbcType="VARCHAR" />
+        <result column="BC_ID" property="bcId" jdbcType="VARCHAR" />
+        <result column="BUDGET_NAME" property="budgetName" jdbcType="VARCHAR" />  
+        <result column="SERIAL" property="serial" jdbcType="INTEGER" />  
+        <result column="ACCOUNT" property="account" jdbcType="NUMERIC" />  
+        <result column="U_ID" property="uId" jdbcType="VARCHAR" />    
+        <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+        <result column="BUDGET_TIME" property="budgetTime" jdbcType="TIMESTAMP" /> 
+        <result column="REMARK" property="remark" jdbcType="VARCHAR" />          
+    </resultMap>  
+    
+  <sql id="Column_List">
+      BC_ID,B_ID,SERIAL,ACCOUNT,U_ID,BUDGET_TIME,REMARK
+  </sql>
+  
+  <sql id="Select_Column_List">
+      bc.[BC_ID],bc.[SERIAL],b.[B_ID],b.[BUDGET_NAME],
+      bc.[ACCOUNT],u.[U_ID],u.[USER_NAME],bc.[BUDGET_TIME],bc.[REMARK]
+  </sql>
+  
+  <sql id="Table_List">
+     [dbo].[BUDGET] b,[dbo].[BUDGET_CONTENT] bc,[dbo].[USER_TABLE] u
+  </sql>
+  
+  <sql id="Link_List">
+      bc.[B_ID]=b.[B_ID] and bc.[U_ID]=u.[U_ID] 
+  </sql>
+  
+  <sql id="Option_List">
+     <if test="bId !=null and bId !=''">and b.[B_ID]=#{bId}</if>
+     <if test="bcId !=null and bcId !=''">and bc.[BC_ID]=#{bcId}</if>
+  </sql>
+  
+  <insert id="addBudgetContent" parameterType="com.org.cygs.pojo.BudgetContent" >
+    insert into [dbo].[BUDGET_CONTENT](<include refid="Column_List"></include>)
+    values (#{bcId},#{bId},#{serial},#{account},#{uId},#{budgetTime},#{remark})
+  </insert>
+   
+   <select id="selectBudgetContentByBId" parameterType="java.lang.String" resultMap="BudgetContent">
+   select <include refid="Select_Column_List"></include>
+   from <include refid="Table_List"></include>
+   <where>
+     <include refid="Link_List"></include>
+     and bc.[B_ID]=#{_parameter}
+   </where>
+    order by bc.[SERIAL] desc   
+   </select> 
+    
+   <select id="selectBudgetContents" parameterType="com.org.cygs.pojo.BudgetContent" resultMap="BudgetContent">
+   select <include refid="Select_Column_List"></include>
+   from <include refid="Table_List"></include>
+  <where>
+     <include refid="Link_List"></include>
+     <include refid="Option_List"></include>
+  </where> 
+  order by bc.[SERIAL] desc
+   </select>
+   
+   <delete id="deleteBudgetContentByBId" parameterType="java.lang.String">
+   delete from [dbo].[BUDGET_CONTENT]
+   where [B_ID]=#{_parameter}
+   </delete>
+
+</mapper>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.org.cygs.dao.PartPositionDao" >    
+    <resultMap id="BaseResultMap" type="com.org.cygs.pojo.PartPosition">  
+        <result column="PS_ID" property="psId" jdbcType="VARCHAR" />  
+        <result column="PS_NAME" property="psName" jdbcType="VARCHAR" />  
+        <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+        <result column="P_ID" property="pId" jdbcType="VARCHAR" />  
+        <result column="P_CODE" property="partId" jdbcType="CHAR" /> 
+        <result column="P_NAME" property="pName" jdbcType="VARCHAR" /> 
+    </resultMap> 
+  
+    <sql id="Part_Column_List">  
+        [PS_NAME], [P_CODE], [P_NAME],[PS_ID],a.[P_ID],a.[REMARK]
+    </sql>  
+  
+   <!-- 通过给定的分部主键查询所有属于该分部的工程部位      新建任务书时使用 -->  
+     <select id="getPartPositionByPId"  parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select  distinct
+        pp.[PS_NAME],pp.[PS_ID]
+        from [dbo].[PART_POSITION] pp, [dbo].[OPERATION_PRICE] op
+        <where>
+        op.PS_ID=pp.PS_ID and op.P_ID=pp.P_ID
+        <if test="_parameter !=null and _parameter !=''">       
+        and pp.[P_ID]=#{_parameter}
+        </if>
+        </where>
+    </select>
+    
+    <!-- 新建合同单价时使用 -->
+    <select id="selectPartPositionByPId"  parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select  distinct
+        pp.[PS_NAME],pp.[PS_ID]
+        from [dbo].[PART_POSITION] pp
+        <where>
+        <if test="_parameter !=null and _parameter !=''">       
+        pp.[P_ID]=#{_parameter}
+        </if>
+        </where>
+    </select>
+    
+
+   <!-- 查询所有不同的工程部位名 -->
+   <select id="getDistinctPsName" resultMap="BaseResultMap">
+   select distinct [PS_NAME]
+   from [dbo].[PART_POSITION]
+   </select>
+   
+   <!-- 根据给定的分部查询所有不同的工程部位名 -->
+    <select id="getPsNameByPart" parameterType="com.org.cygs.pojo.Part"  resultMap="BaseResultMap">
+   select distinct ps.[PS_NAME]
+   from [dbo].[PART_POSITION] ps,[dbo].[PART] p,[dbo].[PROJECT] pr, [dbo].[OPERATION_PRICE] op
+   <where> 
+   ps.[P_ID]=p.[P_ID] and <!-- pr.[PR_ID]=p.[PR_ID]  -->pr.PR_ID=op.PR_ID and p.P_ID=op.P_ID and ps.PS_ID=op.PS_ID
+          <if test="prId !=null and prId!=''">
+		     and pr.PR_ID=#{prId}
+		  </if>
+		  <if test="pName !=null and pName !=''">
+		     and p.P_NAME=#{pName}
+		  </if>
+   </where>
+   order by  ps.[PS_NAME] asc
+   </select>
+        <!-- 查询工程部位-->  
+    <select id="getPartPositionList1" parameterType="com.org.cygs.pojo.PartPosition" resultMap="BaseResultMap">  
+        select   
+        <include refid="Part_Column_List" />  
+        from [dbo].[PART_POSITION] a,[dbo].[PART] b 
+        <where>
+         a.[P_ID]=b.[P_ID]
+          <if test="psName !=null and psName !=''">
+		     and PS_NAME=#{psName}
+		  </if>
+		  <if test="pName !=null and pName !=''">
+		     and P_NAME=#{pName}
+		  </if>		  
+		  <if test="pId !=null and pId !=''">
+		     and a.P_ID=#{pId}
+		  </if>
+	
+		</where>
+        order by [P_NAME] asc  
+    </select>
+  
+  
+    <!--通过主键查询工程部位-->
+     <select id="selectPartPosition" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select   
+        <include refid="Part_Column_List" />  
+        from [dbo].[PART_POSITION] a,[dbo].[PART] b 
+      where a.[P_ID]=b.[P_ID] and [PS_ID]=#{psId}
+    </select>
+
+  
+ 
+    <!-- 删除分部-->  
+    <delete id="deletePartPosition" parameterType="java.lang.String" >  
+        delete from [dbo].[PART_POSITION]  
+        where PS_ID = #{psId}    
+    </delete>  
+      
+    <!-- 添加工程部位-->
+      <insert id="insertPartPosition" parameterType="com.org.cygs.pojo.PartPosition">  
+        insert into [dbo].[PART_POSITION]
+        <trim prefix="(" suffix=")" suffixOverrides="," >    
+          <if test="pId != null" >    
+            P_ID,    
+          </if>    
+          <if test="psName != null" >    
+            PS_NAME,    
+          </if>    
+          <if test="remark != null" >    
+            remark,    
+          </if>        
+        </trim>    
+        <trim prefix="values (" suffix=")" suffixOverrides="," >    
+          <if test="pId != null" >    
+            #{pId},    
+          </if>    
+          <if test="psName != null" >    
+            #{psName,jdbcType=VARCHAR},    
+          </if>    
+          <if test="remark != null" >    
+            #{remark},    
+          </if>    
+        </trim>     
+    </insert> 
+    
+  
+    <!-- 更新分部信息 -->  
+    <update id="updatePartPosition" parameterType="com.org.cygs.pojo.PartPosition" >    
+        update [dbo].[PART_POSITION]    
+        <set >    
+          <if test="psName != null" >    
+            [PS_NAME] = #{psName,jdbcType=VARCHAR},    
+          </if>  
+           <if test="pId != null" >    
+            [P_ID] = #{pId,jdbcType=VARCHAR},    
+          </if> 
+          <if test="remark != null" >    
+            [REMARK] = #{remark,jdbcType=VARCHAR},    
+          </if>     
+        </set>    
+        where [PS_ID] = #{psId,jdbcType=VARCHAR}   
+    </update>
+
+        <!-- 查询工程部位列表-->  
+    <select id="getPartPositionList" parameterType="java.util.Map" resultMap="BaseResultMap">  
+        select  *  
+        from [dbo].[PART_POSITION] a,[dbo].[PART] b 
+        <where>
+         a.[P_ID]=b.[P_ID]
+         <if test="psName !=null and psName !=''">
+		     and PS_NAME=#{psName}
+		  </if>
+		  <if test="pName !=null and pName !=''">
+		     and P_NAME=#{pName}
+		  </if>
+		  
+		  <if test="pId !=null and pId !=''">
+		     and a.P_ID=#{pId}
+		  </if>
+		</where>
+        order by [P_NAME] asc 
+        Offset #{offset} Row Fetch Next #{pageSize} Rows Only 
+    </select>
+  
+       <!-- 得到工程部位数量-->  
+    <select id="getPartPositionCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+         select   count(*)  
+        from [dbo].[PART_POSITION] a,[dbo].[PART] b 
+        <where>
+         a.[P_ID]=b.[P_ID]
+         <if test="psName !=null and psName !=''">
+		     and PS_NAME=#{psName}
+		  </if>
+		  <if test="pName !=null and pName !=''">
+		     and P_NAME=#{pName}
+		  </if>
+		  
+		  <if test="pId !=null and pId !=''">
+		     and a.P_ID=#{pId}
+		  </if>
+		</where>
+    </select>
+      
+
+   <!-- 查询最新插入的主键 -->
+   <select id="getNewPsId"  resultMap="BaseResultMap">
+  		select top 1 * from PART_POSITION
+  		order by PS_ID desc
+  	</select>
+</mapper>  

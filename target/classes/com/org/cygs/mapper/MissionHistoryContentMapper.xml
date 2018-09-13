@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.org.cygs.dao.MissionHistoryContentDao">
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.MissionHistoryContent">
+    <id column="MC_ID" property="mcId" jdbcType="VARCHAR" />
+    <result column="MC_CODE" property="mcCode" jdbcType="INTEGER" />
+    <result column="PRICE" property="price" jdbcType="DECIMAL" />
+    <result column="REAL_QUANTITY" property="realQuantity" jdbcType="DECIMAL" />
+    <result column="WAGE_SUM" property="wageSum" jdbcType="DECIMAL" />
+    <result column="ACCUMULATE_SUM" property="accumulateSum" jdbcType="DECIMAL" />
+    <result column="FLOOR" property="floor" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="M_ID" property="mId" jdbcType="VARCHAR" />
+    <result column="PART_POS" property="partPos" jdbcType="VARCHAR" />
+    <result column="PART_ITEMONE" property="partItemone" jdbcType="VARCHAR" />
+    <result column="PART_ITEMTWO" property="partItemtwo" jdbcType="VARCHAR" />
+    <result column="PART_ITEMTHREE" property="partItemthree" jdbcType="VARCHAR" />
+    <result column="ISRETURN" property="isreturn" jdbcType="VARCHAR" />
+    <result column="INNER_ID" property="innerId" jdbcType="VARCHAR" />
+    <result column="O_ID" property="oId" jdbcType="VARCHAR" />
+    <result column="PS_ID" property="psId" jdbcType="VARCHAR" />
+    <result column="UN_ID" property="unId" jdbcType="VARCHAR" />
+    <result column="P_ID" property="pId" jdbcType="VARCHAR" />
+	<result column="O_NAME" property="oName" jdbcType="VARCHAR" />
+	<result column="PS_NAME" property="psName" jdbcType="VARCHAR" />
+	<result column="UN_NAME" property="unName" jdbcType="VARCHAR" />
+	<result column="P_NAME" property="pName" jdbcType="VARCHAR" />
+
+  </resultMap>
+  
+  <sql id="Column_List">
+   mc.MC_ID,mc.MC_CODE,mc.PRICE,mc.REAL_QUANTITY,mc.WAGE_SUM,mc.ACCUMULATE_SUM,mc.FLOOR,mc.REMARK,p.P_NAME,o.O_NAME,ps.PS_NAME,u.UN_NAME
+   </sql>
+
+  <sql id="Table_List">  
+      [dbo].[MISSION_HISTORY_CONTENT] mc,[dbo].[PART] p,[dbo].[PART_POSITION] ps,[dbo].[UNIT] u,[dbo].[OPERATION] o
+  </sql>
+
+  <sql id="Condition_List">
+        mc.PS_ID = ps.PS_ID and mc.P_ID = p.P_ID and mc.O_ID = o.O_ID and mc.UN_ID = u.UN_ID
+  </sql>
+
+<!-- 查询历史任务书id对应任务书详细信息 -->  
+    <select id="getMHCList" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select
+        <include refid="Column_List" />
+        from 
+       <include refid="Table_List" />
+       <where>
+        <include refid="Condition_List" />
+        and mc.MH_ID = #{mhId}
+	  </where>
+	  order by mc.MC_CODE
+    </select>
+    
+    <select id="getHTNQTMHCList" parameterType="java.lang.String" resultMap="BaseResultMap">  
+        select
+        mc.MC_ID,mc.MC_CODE,mc.PRICE,mc.REAL_QUANTITY,mc.WAGE_SUM,mc.ACCUMULATE_SUM,mc.FLOOR,mc.REMARK,p.P_NAME,o.O_NAME,ps.PS_NAME
+        from 
+       [dbo].[MISSION_HISTORY_CONTENT] mc,[dbo].[PART] p,[dbo].[PART_POSITION] ps,[dbo].[OPERATION] o
+       <where>
+        mc.PS_ID = ps.PS_ID and mc.P_ID = p.P_ID and mc.O_ID = o.O_ID
+        and mc.MH_ID = #{mhId}
+	  </where>
+	  order by mc.MC_CODE
+    </select>
+
+
+
+
+
+
+  <insert id="addMissionHitoryContent" parameterType="com.org.cygs.pojo.MissionHistoryContent">
+    insert into [dbo].[MISSION_HISTORY_CONTENT]
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="mcId != null">
+        MC_ID,
+      </if>
+      <if test="mcCode != null">
+        MC_CODE,
+      </if>
+      <if test="price != null">
+        PRICE,
+      </if>
+      <if test="realQuantity != null">
+        REAL_QUANTITY,
+      </if>
+      <if test="wageSum != null">
+        WAGE_SUM,
+      </if>
+      <if test="accumulateSum != null">
+        ACCUMULATE_SUM,
+      </if>
+      <if test="floor != null">
+        FLOOR,
+      </if>
+      <if test="oId != null">
+        O_ID,
+      </if>
+      <if test="unId != null">
+        UN_ID,
+      </if>
+      <if test="remark != null">
+        REMARK,
+      </if>
+      <if test="mhId != null">
+        MH_ID,
+      </if>
+      <if test="mId != null">
+        M_ID,
+      </if>
+      <if test="psId != null">
+        PS_ID,
+      </if>
+      <if test="pId != null">
+        P_ID,
+      </if>
+      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="mcId != null">
+        #{mcId, jdbcType=VARCHAR},
+      </if>
+      <if test="mcCode != null">
+        #{mcCode, jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        #{price, jdbcType=DECIMAL},
+      </if>
+      <if test="realQuantity != null">
+        #{realQuantity, jdbcType=DECIMAL},
+      </if>
+      <if test="wageSum != null">
+        #{wageSum, jdbcType=DECIMAL},
+      </if>
+      <if test="accumulateSum != null">
+        #{accumulateSum, jdbcType=DECIMAL},
+      </if>
+      <if test="floor != null">
+        #{floor, jdbcType=VARCHAR},
+      </if>
+      <if test="oId != null">
+        #{oId, jdbcType=VARCHAR},
+      </if>
+      <if test="unId != null">
+        #{unId, jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark, jdbcType=VARCHAR},
+      </if>
+      <if test="mhId != null">
+        #{mhId, jdbcType=VARCHAR},
+      </if>
+      <if test="mId != null">
+        #{mId, jdbcType=VARCHAR},
+      </if>
+      <if test="psId != null">
+        #{psId, jdbcType=VARCHAR},
+      </if>
+      <if test="pId != null">
+        #{pId, jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+ 
+</mapper>

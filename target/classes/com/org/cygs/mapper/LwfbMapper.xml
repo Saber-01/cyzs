@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.LwfbDao">
+	<resultMap type="com.org.cygs.pojo.Lwfb" id="lwfb">
+		<result column="cu_name" property="cuName"/>
+		<result column="pr_name" property="prName"/>
+		<result column="sum_wage" property="sumWage"/>
+		<result column="bqjsje" property="bqjs"/>
+		<result column="ljjsje" property="ljjsje"/>
+		<result column="fk" property="fk"/>
+		<result column="qt" property="qt"/>
+		<result column="bqyfje" property="bqyf"/>
+		<result column="pr_sum" property="prSum"/>
+		<result column="cl" property="cl"/>
+		<result column="id" property="id"/>
+	</resultMap>
+	<resultMap type="com.org.cygs.pojo.Lwgzzf" id="lwgzzf">
+		<result column="id" property="id"/>
+		<result column="pr_name" property="prName"/>
+		<result column="cu_name" property="cuName"/>
+		<result column="bqjs" property="bqjs"/>
+		<result column="sqjs" property="sqjs"/>
+		<result column="fk" property="fk"/>
+		<result column="cl" property="cl"/>
+		<result column="qt" property="qt"/>
+		<result column="ljjs" property="ljjs"/>
+	</resultMap>
+	<resultMap type="com.org.cygs.pojo.Lwfbjs" id="lwfbjs">
+		<result column="id" property="id"/>
+		<result column="cu_name" property="cuName"/>
+		<result column="jjgz" property="jjgz"/>
+		<result column="jsgz" property="jsgz"/>
+		<result column="bgqzgz" property="bgqzgz"/>
+		<result column="htwbcjgz" property="htwbgz"/>
+		<result column="htcl" property="htcl"/>
+		<result column="fk" property="fk"/>
+		<result column="cl" property="cl"/>
+		<result column="qt" property="qt"/>
+		<result column="mission_amount" property="missionAmount"/>
+	</resultMap>
+	<resultMap type="com.org.cygs.pojo.MissionVo" id="missionvo">
+		<result column="任务书编号" property="MCode"/>
+		<result column="任务书类型" property="missionTypeName"/>
+		<result column="工程名称" property="projectName"/>
+		<result column="栋号" property="dongHao"/>
+		<result column="开始时间" property="beginDate"/>
+		<result column="结束时间" property="endDate"/>
+		<result column="结算单位" property="cuName"/>
+		<result column="分部" property="fenBu"/>
+		<result column="工程部位" property="gongChengBuWei"/>
+		<result column="工作项目" property="gongZuoXiangMu"/>
+		<result column="具体部位" property="juTiBuWei"/>
+		<result column="提交时间" property="tiJiaoShiJian"/>
+		<result column="单位" property="danWei"/>
+		<result column="单价" property="danJia"/>
+		<result column="工程量" property="gongChengLiang"/>
+		<result column="工资金额" property="gongZiJinE"/>
+		<result column="合同材料" property="heTongCaiLiao"/>
+		<result column="罚款" property="faKuan"/>
+		<result column="扣款材料" property="kouKuanCaiLiao"/>
+		<result column="其他" property="qiTa"/>
+		<result column="最后审核时间" property="zuiHouShenHe"/>
+		<result column="状态" property="zhuangTai"/>
+		<result column="备注" property="remark"/>
+		<result column="项目经理意见" property="xiangMuJingLi"/>
+		<result column="预算意见" property="yuSuan"/>
+		<result column="成控部经理意见" property="chengkong"/>
+		<result column="审计意见" property="shenJi"/>
+		<result column="分管领导意见" property="fenGuanLingDao"/>
+		<result column="合计" property="HEJI"/>
+		
+	</resultMap>
+	<resultMap type="com.org.cygs.pojo.Lwgcldb" id="lwgcldb">
+		<result column="donghao" property="buildNO"/>
+		<result column="fenbu" property="part"/>
+		<result column="gcbuwei" property="partposition"/>
+		<result column="gzxiangmu" property="operation"/>
+		<result column="danwei" property="unit"/>
+		<result column="price" property="price"/>
+		<result column="ysl" property="budgetamount"/>
+		<result column="ykl" property="yikaiamount"/>
+		<result column="ysje" property="budgetmoney"/>	
+		<result column="ykje" property="yikaimoney"/>
+		<result column="lc" property="amountgap"/>
+		<result column="jec" property="moneygap"/>
+	</resultMap>
+	<!-- 获取劳务分包结算汇总表 -->
+	<select id="getLWFB" parameterType="java.util.Map" resultMap="lwfb" statementType="CALLABLE">
+		<![CDATA[
+            {call dbo.laowufenbaohuizongbiao (
+            #{begindate,jdbcType=TIMESTAMP},#{enddate,jdbcType=TIMESTAMP},#{cuId,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR})}
+        ]]>
+	</select>
+	
+	<!-- 获取劳务工资支付明细 -->
+	<select id="getLwgzzf" parameterType="java.util.Map" resultMap="lwgzzf" statementType="CALLABLE">
+		<![CDATA[
+            {call dbo.laowugongzimingxi (
+            #{begindate,jdbcType=TIMESTAMP},#{enddate,jdbcType=TIMESTAMP},
+            #{sqbegindate,jdbcType=TIMESTAMP},#{sqenddate,jdbcType=TIMESTAMP},#{cuId,jdbcType=VARCHAR},
+            #{prId,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR})}
+        ]]>
+	</select>
+	
+	<!-- 获取劳务工资支付汇总 -->
+	<select id="getLwgzzfhz" parameterType="java.util.Map" resultMap="lwgzzf" statementType="CALLABLE">
+		<![CDATA[
+            {call dbo.laowugongzihuizong (
+            #{begindate,jdbcType=TIMESTAMP},#{enddate,jdbcType=TIMESTAMP},#{sqbegindate,jdbcType=TIMESTAMP},#{sqenddate,jdbcType=TIMESTAMP},#{prId,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR})}
+        ]]>
+	</select>
+	
+	<!-- 项目月度结算报表 -->
+	<select id="getLwfbjs" parameterType="java.util.Map" resultMap="lwfbjs" statementType="CALLABLE">
+		<![CDATA[
+            {call dbo.laowufenbao (
+            #{prId,jdbcType=VARCHAR},#{begindate,jdbcType=TIMESTAMP},#{enddate,jdbcType=TIMESTAMP},#{cuId,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR})}
+        ]]>
+	</select>
+	
+	<!-- 项目月度报表中查看所有任务书明细 -->
+	<select id="getAllMissionNew" parameterType="java.util.Map" resultMap="missionvo" statementType="CALLABLE">
+		<![CDATA[
+            {call dbo.listallmissionnew (
+            #{temp1,jdbcType=VARCHAR},#{prId,jdbcType=VARCHAR},#{temp2,jdbcType=VARCHAR},#{year,jdbcType=VARCHAR},#{month,jdbcType=VARCHAR},
+            #{cuId,jdbcType=VARCHAR},#{isAudited,jdbcType=VARCHAR})}
+        ]]>
+	</select>
+	
+	<!-- 获取劳务工程量对比信息 -->
+		<select id="getLwgcldb" parameterType="java.util.Map" resultMap="lwgcldb" statementType="CALLABLE">
+		<![CDATA[
+            {call dbo.QuantitiesComparison (
+            #{prId,jdbcType=VARCHAR},#{pcPId,jdbcType=VARCHAR},#{pId,jdbcType=VARCHAR},#{psId,jdbcType=VARCHAR},
+            #{oId,jdbcType=VARCHAR},#{unId,jdbcType=VARCHAR})}
+        ]]>
+	</select>
+</mapper>

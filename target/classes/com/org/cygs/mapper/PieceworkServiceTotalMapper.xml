@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.LwfbDao">
+	<resultMap type="com.org.cygs.pojo.PieceworkServiceTotal" id="PieceworkServiceTotalMap">
+		<result column="结算单位" property="cuName" jdbcType="VARCHAR"/>
+		<result column="工程名称" property="prName" jdbcType="VARCHAR"/>
+		<result column="分部" property="pName" jdbcType="VARCHAR"/>
+		<result column="工程部位" property="psName" jdbcType="VARCHAR"/>
+		<result column="栋号" property="unitNumber" jdbcType="VARCHAR"/>
+		<result column="价格" property="price" jdbcType="DECIMAL"/>
+		<result column="已结工程量" property="settledConstruction" jdbcType="DECIMAL"/>
+		<result column="已结金额" property="settledMoney" jdbcType="DECIMAL"/>
+
+	</resultMap>
+
+
+	
+	<!-- 班组计件累计 -->
+	<select id="getPieceworkServiceTotal" parameterType="java.util.Map" resultMap="PieceworkServiceTotalMap" statementType="CALLABLE">
+		<![CDATA[
+            {call dbo.laowujijianleiji (
+            #{prId,mode=IN,jdbcType=VARCHAR},
+            #{pcpId,mode=IN,jdbcType=VARCHAR},
+            #{pName,mode=IN,jdbcType=VARCHAR},
+            #{psName,mode=IN,jdbcType=VARCHAR},
+            #{cuId,mode=IN,jdbcType=VARCHAR}
+            )}
+        ]]>
+	</select>
+	
+
+</mapper>

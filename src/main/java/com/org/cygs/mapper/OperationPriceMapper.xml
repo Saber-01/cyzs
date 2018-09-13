@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.org.cygs.dao.OperationPriceDao">
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.OperationPrice">
+    <id column="OP_ID" jdbcType="VARCHAR" property="opId" />
+    <result column="O_ID" jdbcType="VARCHAR" property="oId" />
+    <result column="UN_ID" jdbcType="VARCHAR" property="unId" />
+    <result column="PRICE" jdbcType="DOUBLE" property="price" />
+    <result column="PR_ID" jdbcType="VARCHAR" property="prId" />
+    <result column="PS_ID" jdbcType="VARCHAR" property="psId" />
+    <result column="PC_P_ID" jdbcType="VARCHAR" property="pcPId" />
+    <result column="CU_ID" jdbcType="VARCHAR" property="cuId" />
+    <result column="ISBUDGET" jdbcType="INTEGER" property="isbudget" />
+    <result column="FS_ID" jdbcType="VARCHAR" property="fsId" />
+    <result column="B_ID" jdbcType="VARCHAR" property="bId" />
+    <result column="ACCUMULATE_SUM" jdbcType="DECIMAL" property="accumulateSum" />
+    <result column="BUDGET_SUM" jdbcType="DECIMAL" property="budgetSum" />
+  </resultMap>
+  <resultMap type="com.org.cygs.pojo.BudgetVo" id="budgetVo">
+  	<result column="B_ID" property="bId"/>
+  	<result column="PR_ID" property="prId"/>
+  	<result column="PR_NAME" property="prName"/>
+  	<result column="PC_P_ID" property="pcPId"/>
+  	<result column="UNIT_NUMBER" property="unitNumber"/>
+  	<result column="P_ID" property="pId"/>
+  	<result column="P_NAME" property="pName"/>
+  	<result column="UN_ID" property="unId"/>
+  	<result column="UN_NAME" property="unName"/>
+  	<result column="BUDGET_POS" property="budgetPos"/>
+  	<result column="BUDGET_NAME" property="budgetName"/>
+  	<result column="BUDGET_ACCOUNT" property="budgetAccount"/>
+  	<result column="U_ID" property="uId"/>
+  	<result column="BUDGET_TIME" property="budgetTime" jdbcType="TIMESTAMP"/>
+  	<result column="REMARK" property="remark"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+      OP_ID, O_ID, UN_ID, PRICE, PR_ID, PS_ID, PC_P_ID, CU_ID, ISBUDGET, FS_ID, B_ID, ACCUMULATE_SUM, 
+      BUDGET_SUM
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    OP_ID,O_ID,UN_ID,PRICE,PR_ID,PS_ID,PC_P_ID,CU_ID,ISBUDGET,FS_ID,B_ID,ACCUMULATE_SUM,BUDGET_SUM
+    from OPERATION_PRICE
+    where OP_ID = #{opId,jdbcType=VARCHAR}
+  </select>
+ <!-- OPERATION_PRICE中oid没有重复的值？ -->
+ <select id="selectPriceByOid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select distinct op.PRICE from OPERATION_PRICE op where op.O_ID=#{0}
+  </select>
+ 
+ <!-- 根据工程、楼栋号与分部获取所有的BudgetVo -->
+	<select id="getBudgetVo" parameterType="java.util.Map" resultMap="budgetVo">
+		select b.*,pr.[PR_NAME],p.[P_NAME],pip.[UNIT_NUMBER],un.[UN_NAME]
+			from [dbo].[BUDGET] b,[dbo].[PROJECT] pr,[dbo].[PART] p,[dbo].[PR_INDEX_PC] pip,[dbo].[UNIT] un
+			<where>
+				b.[PR_ID] = #{prId} and b.[PR_ID] = pr.[PR_ID] and b.[P_ID] = p.[P_ID] and b.[PC_P_ID] = pip.[PC_P_ID] and b.[UN_ID] = un.[UN_ID]
+				<if test="pcPId != null and pcPId != ''">
+					and b.[PC_P_ID] = #{pcPId}
+				</if>
+				<if test="pId != null and pId != ''">
+					and b.[P_ID] = #{pId}
+				</if>
+			</where>
+			order by b.[B_ID] asc
+	</select>
+	
+	<!-- 根据budgetVo查找出所有的operationPrice -->
+	<select id="getOperationPriceByBudget" resultMap="BaseResultMap" parameterType="com.org.cygs.pojo.BudgetVo">
+		select * from
+			[dbo].[OPERATION_PRICE] op
+			<where>
+				op.[B_ID] = #{bId}
+			</where>
+			order by op.[OP_ID] asc
+	</select>
+	
+	<!-- 根据operationPrice 获取计件已开量 -->
+	<select id="getJjyk" resultType="java.lang.Double" parameterType="com.org.cygs.pojo.OperationPrice">
+		select sum(mc.[REAL_QUANTITY])
+			from [dbo].[MISSION_CONTENT] mc,[dbo].[MISSION] m,[dbo].[MISSION_TYPE] mt
+			where mc.[O_ID] = #{oId} and mc.[M_ID] = m.[M_ID] and m.[MT_ID] = mt.[MT_ID] and mt.[MT_CODE] = 1 and m.[STATUS] > 0
+	</select>
+	
+	<!-- 计件已审工程量 -->
+	<select id="getJjys" resultType="java.lang.Double" parameterType="com.org.cygs.pojo.OperationPrice">
+		select sum(mc.[REAL_QUANTITY])
+			from [dbo].[MISSION_CONTENT] mc,[dbo].[MISSION] m,[dbo].[MISSION_TYPE] mt
+			where mc.[M_ID] = m.[M_ID] and m.[MT_ID] = mt.[MT_ID] and mt.[MT_CODE] = 1 and m.[STATUS] = 100 and mc.[O_ID] = #{oId}
+	</select>
+</mapper>

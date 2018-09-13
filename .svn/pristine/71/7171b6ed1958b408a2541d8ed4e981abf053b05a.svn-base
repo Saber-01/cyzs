@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.org.cygs.dao.DepartmentDao" >
+  <resultMap id="BaseResultMap" type="com.org.cygs.pojo.Department" >
+    <id column="DP_ID" property="dpId" jdbcType="VARCHAR" />
+    <result column="DP_NAME" property="dpName" jdbcType="VARCHAR" />
+    <result column="DP_CODE" property="dpCode" jdbcType="CHAR" />
+    <result column="U_ID" property="uId" jdbcType="VARCHAR" />
+    <result column="DP_STATUS" property="dpStatus" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    <if test="fields == null" >
+      DP_ID, DP_NAME, DP_CODE, U_ID, DP_STATUS
+    </if>
+    <if test="fields != null" >
+      ${fields}
+    </if>
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    DP_ID,DP_NAME,DP_CODE,U_ID,DP_STATUS
+    from DEPARTMENT
+    where DP_ID = #{dpId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectDpNameandCode" resultMap="BaseResultMap">
+    select distinct DP_NAME, DP_CODE from Department
+  </select>
+  
+  <select id="selectDpByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select distinct DP_NAME, DP_CODE from Department where DP_CODE = #{0}
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from DEPARTMENT
+    where DP_ID = #{dpId,jdbcType=VARCHAR}
+  </delete>
+  
+  
+  <insert id="insert" parameterType="com.org.cygs.pojo.Department" >
+    insert into DEPARTMENT (DP_ID, DP_NAME, DP_CODE, 
+      U_ID, DP_STATUS)
+    values (#{dpId,jdbcType=VARCHAR}, #{dpName,jdbcType=VARCHAR}, #{dpCode,jdbcType=CHAR}, 
+      #{uId,jdbcType=VARCHAR}, #{dpStatus,jdbcType=INTEGER})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.org.cygs.pojo.Department" >
+    insert into DEPARTMENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="dpId != null" >
+        DP_ID,
+      </if>
+      <if test="dpName != null" >
+        DP_NAME,
+      </if>
+      <if test="dpCode != null" >
+        DP_CODE,
+      </if>
+      <if test="uId != null" >
+        U_ID,
+      </if>
+      <if test="dpStatus != null" >
+        DP_STATUS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="dpId != null" >
+        #{dpId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpName != null" >
+        #{dpName,jdbcType=VARCHAR},
+      </if>
+      <if test="dpCode != null" >
+        #{dpCode,jdbcType=CHAR},
+      </if>
+      <if test="uId != null" >
+        #{uId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpStatus != null" >
+        #{dpStatus,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByExampleSelective" parameterType="map" >
+    update DEPARTMENT
+    <set >
+      <if test="record.dpId != null" >
+        DP_ID = #{record.dpId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dpName != null" >
+        DP_NAME = #{record.dpName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dpCode != null" >
+        DP_CODE = #{record.dpCode,jdbcType=CHAR},
+      </if>
+      <if test="record.uId != null" >
+        U_ID = #{record.uId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dpStatus != null" >
+        DP_STATUS = #{record.dpStatus,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update DEPARTMENT
+    set DP_ID = #{record.dpId,jdbcType=VARCHAR},
+      DP_NAME = #{record.dpName,jdbcType=VARCHAR},
+      DP_CODE = #{record.dpCode,jdbcType=CHAR},
+      U_ID = #{record.uId,jdbcType=VARCHAR},
+      DP_STATUS = #{record.dpStatus,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.org.cygs.pojo.Department" >
+    update DEPARTMENT
+    <set >
+      <if test="dpName != null" >
+        DP_NAME = #{dpName,jdbcType=VARCHAR},
+      </if>
+      <if test="dpCode != null" >
+        DP_CODE = #{dpCode,jdbcType=CHAR},
+      </if>
+      <if test="uId != null" >
+        U_ID = #{uId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpStatus != null" >
+        DP_STATUS = #{dpStatus,jdbcType=INTEGER},
+      </if>
+    </set>
+    where DP_ID = #{dpId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.org.cygs.pojo.Department" >
+    update DEPARTMENT
+    set DP_NAME = #{dpName,jdbcType=VARCHAR},
+      DP_CODE = #{dpCode,jdbcType=CHAR},
+      U_ID = #{uId,jdbcType=VARCHAR},
+      DP_STATUS = #{dpStatus,jdbcType=INTEGER}
+    where DP_ID = #{dpId,jdbcType=VARCHAR}
+  </update>
+</mapper>
